@@ -18,7 +18,6 @@ def center(main_window: QMainWindow):
     main_window.move(qr.topLeft())
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -29,12 +28,13 @@ class MainWindow(QMainWindow):
         bank_list_dropdown.move(800, 10)
         bank_list_dropdown.setFixedSize(200, 30)
         bank_list_dropdown.addItems(bank_list)
-        bank_list_dropdown.activated.connect(self.hide_summary_data)
+        # bank_list_dropdown.activated.connect(None)
 
         test_list = QListWidget()
-        test_list.addItem("Lorem Ipsum")
-        test_list.addItem("Lorem Ipsum")
-        test_list.setFixedSize(120,720)
+        test_list.addItem("Overview")
+        test_list.addItem("Accounts")
+        test_list.setFixedSize(120, 720)
+        test_list.itemClicked.connect(self.hide_summary_data)
 
         total_balance_groupbox = QGroupBox("Total Balance")
         total_balance_text = QLabel("")
@@ -95,12 +95,16 @@ class MainWindow(QMainWindow):
 
         self.base_layout = QWidget()
         self.setCentralWidget(self.base_layout)
-        self.base_layout.setLayout(self.home_window )
+        self.base_layout.setLayout(self.home_window)
 
         self.show()
 
-    def hide_summary_data(self):
-        self.bank_data_widget.hide()
+    def hide_summary_data(self, item):
+        if item.text() == "Overview":
+            self.bank_data_widget.show()
+        else:
+            self.bank_data_widget.hide()
+
 
 def main():
     app = QApplication(sys.argv)
