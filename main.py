@@ -141,10 +141,32 @@ class MainWindow(QMainWindow):
 
         account_box2.addLayout(accounts_name_box2)
         account_box2.addLayout(account_balance_box2)
-        account_box2.setSizeConstraint(QLayout.SetFixedSize)
+
+        account_box3 = QHBoxLayout()
+
+        accounts_name_box3 = QVBoxLayout()
+        account_name_label3 = QLabel("Entertainment")
+        account_number_label3 = QLabel("xxxx-xxxx-xxxx-9658")
+        accounts_name_box3.addWidget(account_name_label3)
+        accounts_name_box3.addWidget(account_number_label3)
+
+        account_balance_box3 = QHBoxLayout()
+        account_balance_label3 = QLabel("$0.00")
+        account_balance_box3.addWidget(account_balance_label3)
+        account_balance_box3.setDirection(QBoxLayout.RightToLeft)
+        # account_balance_box2.addStretch(1)
+
+        account_box3.addLayout(accounts_name_box3)
+        account_box3.addLayout(account_balance_box3)
+
+        see_all_layout = QVBoxLayout()
+        see_all_label = QPushButton("SEE ALL")
+        see_all_layout.addWidget(see_all_label)
 
         total_balance_box.addLayout(account_box)
         total_balance_box.addLayout(account_box2)
+        total_balance_box.addLayout(account_box3)
+        total_balance_box.addLayout(see_all_layout)
 
         return total_balance_box
 
