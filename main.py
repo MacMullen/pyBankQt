@@ -37,15 +37,10 @@ class MainWindow(QMainWindow):
         test_list.itemClicked.connect(self.hide_summary_data)
 
         total_balance_groupbox = QGroupBox("Total Balance")
-        total_balance_text = QLabel("")
-        total_balance_layout_box = QVBoxLayout()
-        total_balance_layout_box.addWidget(total_balance_text)
-        total_balance_groupbox.setLayout(total_balance_layout_box)
+        total_balance_groupbox.setLayout(self.total_balance_box())
 
         total_balance_groupbox2 = QGroupBox("Credit Card Summary")
-        total_balance_text2 = QLabel("")
         total_balance_layout_box2 = QVBoxLayout()
-        total_balance_layout_box2.addWidget(total_balance_text2)
         total_balance_groupbox2.setLayout(total_balance_layout_box2)
 
         self.total_balance_groupbox3 = QGroupBox("Latest Transactions")
@@ -105,6 +100,53 @@ class MainWindow(QMainWindow):
         else:
             self.bank_data_widget.hide()
 
+    def total_balance_box(self):
+        total_balance_box = QVBoxLayout()
+        balance_label = QLabel("$12,587.56")
+        balance_label.setStyleSheet("font: 46pt")
+        accounts_label = QLabel("Accounts")
+        total_balance_box.addWidget(balance_label)
+        total_balance_box.addWidget(accounts_label)
+
+        account_box = QHBoxLayout()
+
+        accounts_name_box = QVBoxLayout()
+        account_name_label = QLabel("Home Savings")
+        account_number_label = QLabel("xxxx-xxxx-xxxx-5689")
+        accounts_name_box.addWidget(account_name_label)
+        accounts_name_box.addWidget(account_number_label)
+
+        account_balance_box = QHBoxLayout()
+        account_balance_label = QLabel("$12,000.00")
+        account_balance_box.addWidget(account_balance_label)
+        account_balance_box.setDirection(QBoxLayout.RightToLeft)
+        # account_balance_box.addStretch(1)
+
+        account_box.addLayout(accounts_name_box)
+        account_box.addLayout(account_balance_box)
+
+        account_box2 = QHBoxLayout()
+
+        accounts_name_box2 = QVBoxLayout()
+        account_name_label2 = QLabel("Home Expenses")
+        account_number_label2 = QLabel("xxxx-xxxx-xxxx-6985")
+        accounts_name_box2.addWidget(account_name_label2)
+        accounts_name_box2.addWidget(account_number_label2)
+
+        account_balance_box2 = QHBoxLayout()
+        account_balance_label2 = QLabel("$587.56")
+        account_balance_box2.addWidget(account_balance_label2)
+        account_balance_box2.setDirection(QBoxLayout.RightToLeft)
+        # account_balance_box2.addStretch(1)
+
+        account_box2.addLayout(accounts_name_box2)
+        account_box2.addLayout(account_balance_box2)
+        account_box2.setSizeConstraint(QLayout.SetFixedSize)
+
+        total_balance_box.addLayout(account_box)
+        total_balance_box.addLayout(account_box2)
+
+        return total_balance_box
 
 def main():
     app = QApplication(sys.argv)
