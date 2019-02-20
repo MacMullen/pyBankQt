@@ -75,18 +75,41 @@ class MainWindow(QMainWindow):
         summary_information_layout.addLayout(total_balance_layout3)
 
         bank_data_layout = QVBoxLayout()
-        bank_data_layout.addLayout(select_bank_layout)
         bank_data_layout.addLayout(summary_information_layout)
         bank_data_layout.addLayout(graph_layout)
 
-        self.bank_data_widget = QWidget()
-        self.bank_data_widget.setLayout(bank_data_layout)
+        self.overview_data_widget = QWidget()
+        self.overview_data_widget.setLayout(bank_data_layout)
+
+        account_cc_groupbox = QGroupBox("Credit Cards")
+        account_cc_layout_box = QVBoxLayout()
+        account_cc_groupbox.setLayout(account_cc_layout_box)
+        account_cc_overview = QHBoxLayout()
+        account_cc_overview.addWidget(account_cc_groupbox)
+
+        account_transactions_groupbox = QGroupBox("Latest Transactions")
+        account_transactions_layout_box = QVBoxLayout()
+        account_transactions_groupbox.setLayout(account_transactions_layout_box)
+        account_transactions_overview = QHBoxLayout()
+        account_transactions_overview.addWidget(account_transactions_groupbox)
+
+        account_data_layout = QVBoxLayout()
+        account_data_layout.addLayout(select_bank_layout)
+        account_data_layout.addLayout(account_cc_overview)
+        account_data_layout.addLayout(account_transactions_overview)
+
+        self.account_data_widget = QWidget()
+        self.account_data_widget.setLayout(account_data_layout)
+        self.account_data_widget.hide()
+
+        self.overview_data_widget.setLayout(bank_data_layout)
 
         main_menu_layout = QVBoxLayout()
         main_menu_layout.addWidget(test_list)
 
         self.home_window.addLayout(main_menu_layout)
-        self.home_window.addWidget(self.bank_data_widget)
+        self.home_window.addWidget(self.overview_data_widget)
+        self.home_window.addWidget(self.account_data_widget)
 
         self.base_layout = QWidget()
         self.setCentralWidget(self.base_layout)
@@ -96,9 +119,11 @@ class MainWindow(QMainWindow):
 
     def hide_summary_data(self, item):
         if item.text() == "Overview":
-            self.bank_data_widget.show()
+            self.overview_data_widget.show()
+            self.account_data_widget.hide()
         else:
-            self.bank_data_widget.hide()
+            self.overview_data_widget.hide()
+            self.account_data_widget.show()
 
     def total_balance_box(self):
         total_balance_box = QVBoxLayout()
@@ -169,6 +194,7 @@ class MainWindow(QMainWindow):
         total_balance_box.addLayout(see_all_layout)
 
         return total_balance_box
+
 
 def main():
     app = QApplication(sys.argv)
