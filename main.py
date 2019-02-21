@@ -31,8 +31,15 @@ class MainWindow(QMainWindow):
         # bank_list_dropdown.activated.connect(None)
 
         test_list = QListWidget()
-        test_list.addItem("Overview")
-        test_list.addItem("Accounts")
+        test_list.setViewMode(QListView.IconMode)
+        list_overview_button = QListWidgetItem(QIcon("lib/ic_home_2x.png"), "Overview")
+        list_overview_button.setSizeHint(QSize(120, 60))
+        list_overview_button.setTextAlignment(Qt.AlignCenter)
+        list_account_button = QListWidgetItem(QIcon("lib/ic_assessment_2x.png"), "Accounts")
+        list_account_button.setSizeHint(QSize(120, 60))
+        list_account_button.setTextAlignment(Qt.AlignHCenter)
+        test_list.addItem(list_overview_button)
+        test_list.addItem(list_account_button)
         test_list.setFixedSize(120, 720)
         test_list.itemClicked.connect(self.hide_summary_data)
 
