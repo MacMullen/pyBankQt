@@ -3,6 +3,7 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from functools import partial
+import time
 import sys
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
@@ -31,7 +32,7 @@ class MainWindow(QMainWindow):
         # bank_list_dropdown.activated.connect(None)
 
         test_list = QListWidget()
-        test_list.setViewMode(QListView.IconMode)
+        # test_list.setViewMode(QListView.IconMode)
         list_overview_button = QListWidgetItem(QIcon("lib/ic_home_2x.png"), "Overview")
         list_overview_button.setSizeHint(QSize(120, 60))
         list_overview_button.setTextAlignment(Qt.AlignCenter)
@@ -45,10 +46,11 @@ class MainWindow(QMainWindow):
 
         total_balance_groupbox = QGroupBox("Total Balance")
         total_balance_groupbox.setLayout(self.total_balance_box())
+        total_balance_groupbox.setMaximumWidth(360)
 
         total_balance_groupbox2 = QGroupBox("Credit Card Summary")
-        total_balance_layout_box2 = QVBoxLayout()
-        total_balance_groupbox2.setLayout(total_balance_layout_box2)
+        total_balance_groupbox2.setLayout(self.credit_card_box())
+        total_balance_groupbox2.setMaximumWidth(360)
 
         self.total_balance_groupbox3 = QGroupBox("Latest Transactions")
         self.total_balance_layout_box3 = QVBoxLayout()
@@ -124,6 +126,9 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+        # loading_screen = self.newWindow()
+
+
     def hide_summary_data(self, item):
         if item.text() == "Overview":
             self.overview_data_widget.show()
@@ -134,16 +139,17 @@ class MainWindow(QMainWindow):
 
     def total_balance_box(self):
         total_balance_box = QVBoxLayout()
-        balance_label = QLabel("$12,587.56")
-        balance_label.setStyleSheet("font: 46pt")
+        balance_label = QLabel("$120,587.56")
+        balance_label.setStyleSheet("font: 36pt")
         accounts_label = QLabel("Accounts")
+        accounts_label.setStyleSheet("font: 16pt")
         total_balance_box.addWidget(balance_label)
         total_balance_box.addWidget(accounts_label)
 
         account_box = QHBoxLayout()
 
         accounts_name_box = QVBoxLayout()
-        account_name_label = QLabel("Home Savings")
+        account_name_label = QLabel("Bank 1 Savings")
         account_number_label = QLabel("xxxx-xxxx-xxxx-5689")
         accounts_name_box.addWidget(account_name_label)
         accounts_name_box.addWidget(account_number_label)
@@ -152,7 +158,7 @@ class MainWindow(QMainWindow):
         account_balance_label = QLabel("$12,000.00")
         account_balance_box.addWidget(account_balance_label)
         account_balance_box.setDirection(QBoxLayout.RightToLeft)
-        # account_balance_box.addStretch(1)
+        account_balance_box.addStretch(1)
 
         account_box.addLayout(accounts_name_box)
         account_box.addLayout(account_balance_box)
@@ -160,7 +166,7 @@ class MainWindow(QMainWindow):
         account_box2 = QHBoxLayout()
 
         accounts_name_box2 = QVBoxLayout()
-        account_name_label2 = QLabel("Home Expenses")
+        account_name_label2 = QLabel("Bank 1 Investments")
         account_number_label2 = QLabel("xxxx-xxxx-xxxx-6985")
         accounts_name_box2.addWidget(account_name_label2)
         accounts_name_box2.addWidget(account_number_label2)
@@ -169,7 +175,7 @@ class MainWindow(QMainWindow):
         account_balance_label2 = QLabel("$587.56")
         account_balance_box2.addWidget(account_balance_label2)
         account_balance_box2.setDirection(QBoxLayout.RightToLeft)
-        # account_balance_box2.addStretch(1)
+        account_balance_box2.addStretch(1)
 
         account_box2.addLayout(accounts_name_box2)
         account_box2.addLayout(account_balance_box2)
@@ -177,7 +183,7 @@ class MainWindow(QMainWindow):
         account_box3 = QHBoxLayout()
 
         accounts_name_box3 = QVBoxLayout()
-        account_name_label3 = QLabel("Entertainment")
+        account_name_label3 = QLabel("Bank 2 Savings")
         account_number_label3 = QLabel("xxxx-xxxx-xxxx-9658")
         accounts_name_box3.addWidget(account_name_label3)
         accounts_name_box3.addWidget(account_number_label3)
@@ -186,7 +192,7 @@ class MainWindow(QMainWindow):
         account_balance_label3 = QLabel("$0.00")
         account_balance_box3.addWidget(account_balance_label3)
         account_balance_box3.setDirection(QBoxLayout.RightToLeft)
-        # account_balance_box2.addStretch(1)
+        account_balance_box3.addStretch(1)
 
         account_box3.addLayout(accounts_name_box3)
         account_box3.addLayout(account_balance_box3)
@@ -199,14 +205,45 @@ class MainWindow(QMainWindow):
         total_balance_box.addLayout(account_box2)
         total_balance_box.addLayout(account_box3)
         total_balance_box.addLayout(see_all_layout)
-
         return total_balance_box
+
+    def credit_card_box(self):
+        credit_card_box = QVBoxLayout()
+        credit_card_label_total = QLabel("Total Owned")
+        credit_card_total = QLabel("$120,587.56")
+        credit_card_total.setStyleSheet("font:24pt")
+        accounts_label = QLabel("Credit Cards")
+        accounts_label.setStyleSheet("font: 10pt")
+        credit_card_box.addWidget(credit_card_label_total)
+        credit_card_box.addWidget(credit_card_total)
+        credit_card_box.addWidget(accounts_label)
+
+        return credit_card_box
+
+    def newWindow(self):
+        self.mainwindow2 = MainWindow2(self)
+        self.mainwindow2.closed.connect(self.show)
+        self.mainwindow2.show()
+        self.hide()
+
+
+class MainWindow2(QMainWindow):
+    # QMainWindow doesn't have a closed signal, so we'll make one.
+    closed = pyqtSignal()
+
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
+        self.parent = parent
+        label = QLabel('Retrieving Bank Data', self)
+
+    def closeEvent(self, event):
+        self.closed.emit()
+        event.accept()
 
 
 def main():
     app = QApplication(sys.argv)
     GUI = MainWindow()
-    sys.exit(app.exec_())
-
+    app.exec_()
 
 main()
