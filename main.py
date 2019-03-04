@@ -2,9 +2,14 @@ from PyQt5.QtGui import *
 from PyQt5 import QtGui
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from functools import partial
-import time
+from PyQt5.QtWebEngineWidgets import *
 import sys
+
+import plotly.offline as py
+import plotly.graph_objs as go
+
+import pandas as pd
+from datetime import datetime
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
@@ -69,20 +74,32 @@ class MainWindow(QMainWindow):
         total_balance_layout3 = QHBoxLayout()
         total_balance_layout3.addWidget(self.total_balance_groupbox3)
 
-        graph = QLabel()
-        pixmap = QPixmap("lib/area_graph.png")
-        graph.setPixmap(pixmap)
+        view = QWebEngineView()
+        view.load(QUrl.fromLocalFile(QFileInfo("time-series-simple.html").absoluteFilePath()))
+        view.setMaximumHeight(300)
         graph_layout = QHBoxLayout()
-        graph_layout.addWidget(graph)
+        graph_layout.addWidget(view)
 
         summary_information_layout = QHBoxLayout()
         summary_information_layout.addLayout(total_balance_layout)
         summary_information_layout.addLayout(total_balance_layout2)
         summary_information_layout.addLayout(total_balance_layout3)
 
+        balance_information_layout = QHBoxLayout()
+
+        balance_information_groupbox = QGroupBox("Transactions")
+        balance_information_groupbox_layout = QVBoxLayout()
+        balance_information_groupbox.setLayout(balance_information_groupbox_layout)
+
+        new_layout = QHBoxLayout()
+        new_layout.addWidget(balance_information_groupbox)
+
+        balance_information_layout.addLayout(new_layout)
+        balance_information_layout.addLayout(graph_layout)
+
         bank_data_layout = QVBoxLayout()
         bank_data_layout.addLayout(summary_information_layout)
-        bank_data_layout.addLayout(graph_layout)
+        bank_data_layout.addLayout(balance_information_layout)
 
         self.overview_data_widget = QWidget()
         self.overview_data_widget.setLayout(bank_data_layout)
@@ -324,6 +341,12 @@ class MainWindow2(QMainWindow):
 
 
 def main():
+    df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
+
+    data = [go.Scatter(x=df.Date, y=df['AAPL.High'])]
+
+    py.plot(data, filename='time-series-simple.html', auto_open=False)
+
     app = QApplication(sys.argv)
     GUI = MainWindow()
     app.exec_()
