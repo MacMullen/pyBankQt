@@ -157,69 +157,19 @@ class MainWindow(QMainWindow):
         balance_label = QLabel("$120,587.56")
         balance_label.setStyleSheet("font-family: Roboto; font: 36pt; background: #424242; color: #1EB980;")
         accounts_label = QLabel("Accounts")
-        accounts_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #424242; color: white;")
+        accounts_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #424242; color: white;")
         accounts_label.setMaximumHeight(14)
         total_balance_box.addWidget(accounts_label)
         total_balance_box.addWidget(balance_label)
-
-        account_box = QHBoxLayout()
-
-        accounts_name_box = QVBoxLayout()
-        account_name_label = QLabel("Bank 1 Savings")
-        account_number_label = QLabel("xxxx-xxxx-xxxx-5689")
-        accounts_name_box.addWidget(account_name_label)
-        accounts_name_box.addWidget(account_number_label)
-
-        account_balance_box = QHBoxLayout()
-        account_balance_label = QLabel("$12,000.00")
-        account_balance_box.addWidget(account_balance_label)
-        account_balance_box.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box.addStretch(1)
-
-        account_box.addLayout(accounts_name_box)
-        account_box.addLayout(account_balance_box)
-
-        account_box2 = QHBoxLayout()
-
-        accounts_name_box2 = QVBoxLayout()
-        account_name_label2 = QLabel("Bank 1 Investments")
-        account_number_label2 = QLabel("xxxx-xxxx-xxxx-6985")
-        accounts_name_box2.addWidget(account_name_label2)
-        accounts_name_box2.addWidget(account_number_label2)
-
-        account_balance_box2 = QHBoxLayout()
-        account_balance_label2 = QLabel("$587.56")
-        account_balance_box2.addWidget(account_balance_label2)
-        account_balance_box2.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box2.addStretch(1)
-
-        account_box2.addLayout(accounts_name_box2)
-        account_box2.addLayout(account_balance_box2)
-
-        account_box3 = QHBoxLayout()
-
-        accounts_name_box3 = QVBoxLayout()
-        account_name_label3 = QLabel("Bank 2 Savings")
-        account_number_label3 = QLabel("xxxx-xxxx-xxxx-9658")
-        accounts_name_box3.addWidget(account_name_label3)
-        accounts_name_box3.addWidget(account_number_label3)
-
-        account_balance_box3 = QHBoxLayout()
-        account_balance_label3 = QLabel("$0.00")
-        account_balance_box3.addWidget(account_balance_label3)
-        account_balance_box3.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box3.addStretch(1)
-
-        account_box3.addLayout(accounts_name_box3)
-        account_box3.addLayout(account_balance_box3)
 
         see_all_layout = QVBoxLayout()
         see_all_label = QPushButton("SEE ALL")
         see_all_layout.addWidget(see_all_label)
 
-        total_balance_box.addLayout(account_box)
-        total_balance_box.addLayout(account_box2)
-        total_balance_box.addLayout(account_box3)
+        total_balance_box.addLayout(self.account_box(money="30146.89"))
+        total_balance_box.addLayout(self.account_box(money="0.00"))
+        total_balance_box.addLayout(self.account_box(money="30146.89"))
+        total_balance_box.addLayout(self.account_box(money="60293.78"))
         total_balance_box.addLayout(see_all_layout)
         return total_balance_box
 
@@ -227,7 +177,7 @@ class MainWindow(QMainWindow):
         credit_card_box = QVBoxLayout()
 
         payment_box = QHBoxLayout()
-        credit_card_label_total = QLabel("Total Payment")
+        credit_card_label_total = QLabel("Current balance")
         credit_card_label_total.setStyleSheet(
             "font-family: Roboto; font-weight: bold; font: 10pt; background: #424242; color: white;")
         credit_card_total = QLabel("$587.56")
@@ -246,7 +196,8 @@ class MainWindow(QMainWindow):
         credit_card_min_payment_layout.addWidget(credit_card_min_payment_value)
         credit_card_total.setTextInteractionFlags(Qt.TextSelectableByMouse)
         accounts_label = QLabel("Credit Cards")
-        accounts_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #424242; color: white;")
+        accounts_label.setStyleSheet(
+            "background-color: white; font-family: Roboto; font: 12pt; background: #424242; color: white;")
 
         payment_box.addLayout(credit_card_total_layout)
         payment_box.addLayout(credit_card_min_payment_layout)
@@ -259,13 +210,17 @@ class MainWindow(QMainWindow):
         credit_card_box_1 = QHBoxLayout()
 
         credit_card_name_1 = QVBoxLayout()
-        credit_card_label_1 = QLabel("MasterCard")
+        credit_card_pixmap_1 = QPixmap("lib/mastercard.png")
+        credit_card_label_1 = QLabel()
+        credit_card_label_1.setPixmap(credit_card_pixmap_1)
+        credit_card_label_1.setStyleSheet("background: #424242")
         credit_card_number_label_1 = QLabel("xxxx-xxxx-xxxx-9658")
+        credit_card_number_label_1.setStyleSheet("font-family: Roboto; font: 10pt; background: #424242; color: white;")
         credit_card_name_1.addWidget(credit_card_label_1)
         # credit_card_name_1.addWidget(credit_card_number_label_1)
 
         credit_card_balance_box_1 = QHBoxLayout()
-        credit_card_balance_label_1 = QLabel("Min: $10.00 Total: $25.00")
+        credit_card_balance_label_1 = QLabel("Min: $10.00 Total: $25.00 \n Due date 6/26/2017")
         credit_card_balance_box_1.addWidget(credit_card_balance_label_1)
         credit_card_balance_box_1.setDirection(QBoxLayout.RightToLeft)
         credit_card_balance_box_1.addStretch(1)
@@ -283,30 +238,13 @@ class MainWindow(QMainWindow):
         credit_card_name_2.addWidget(credit_card_number_label_2)
 
         credit_card_balance_box_2 = QHBoxLayout()
-        credit_card_balance_label_2 = QLabel("Min: $10.00 Total: $25.00")
+        credit_card_balance_label_2 = QLabel("Min: $10.00 Total: $25.00  \n Due date 6/26/2017")
         credit_card_balance_box_2.addWidget(credit_card_balance_label_2)
         credit_card_balance_box_2.setDirection(QBoxLayout.RightToLeft)
         credit_card_balance_box_2.addStretch(1)
 
         credit_card_box_2.addLayout(credit_card_name_2)
         credit_card_box_2.addLayout(credit_card_balance_box_2)
-
-        credit_card_box_3 = QHBoxLayout()
-
-        credit_card_name_3 = QVBoxLayout()
-        credit_card_label_3 = QLabel("Visa")
-        credit_card_number_label_3 = QLabel("xxxx-xxxx-xxxx-0852")
-        credit_card_name_3.addWidget(credit_card_label_3)
-        credit_card_name_3.addWidget(credit_card_number_label_3)
-
-        credit_card_balance_box_3 = QHBoxLayout()
-        credit_card_balance_label_3 = QLabel("Min: $0.00 Total: $0.00")
-        credit_card_balance_box_3.addWidget(credit_card_balance_label_3)
-        credit_card_balance_box_3.setDirection(QBoxLayout.RightToLeft)
-        credit_card_balance_box_3.addStretch(1)
-
-        credit_card_box_3.addLayout(credit_card_name_3)
-        credit_card_box_3.addLayout(credit_card_balance_box_3)
 
         credit_card_box.addLayout(payment_box_title)
         credit_card_box.addItem(QSpacerItem(50, 30))
@@ -315,7 +253,7 @@ class MainWindow(QMainWindow):
         credit_card_box.addItem(QSpacerItem(50, 10))
         credit_card_box.addLayout(credit_card_box_2)
         credit_card_box.addItem(QSpacerItem(50, 10))
-        credit_card_box.addLayout(credit_card_box_3)
+        credit_card_box.addLayout(self.credit_card_box())
 
         return credit_card_box
 
@@ -324,6 +262,58 @@ class MainWindow(QMainWindow):
         self.mainwindow2.closed.connect(self.show)
         self.mainwindow2.show()
         self.hide()
+
+    def account_box(self, money):
+        account_box4 = QHBoxLayout()
+
+        accounts_name_box4 = QVBoxLayout()
+        account_name_label4 = QLabel("Bank 2 Savings")
+        account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #424242; color: white;")
+        account_number_label4 = QLabel("xxxx-xxxx-xxxx-9658")
+        account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #424242; color: grey;")
+        accounts_name_box4.setContentsMargins(0, 0, 0, 0)
+        accounts_name_box4.addWidget(account_name_label4, 0, Qt.AlignBottom)
+        accounts_name_box4.addWidget(account_number_label4, 0, Qt.AlignTop)
+
+        account_balance_box4 = QHBoxLayout()
+        account_balance_label4 = QLabel(money)
+        account_balance_label4.setStyleSheet("font-family: Eczar; font: 12pt; background: #424242; color: white;")
+        account_balance_box4.addWidget(account_balance_label4, Qt.AlignCenter)
+        account_balance_box4.addStretch(1)
+
+        account_balance_money_sign_layout = QHBoxLayout()
+        account_balance_money_sign = QLabel("$")
+        account_balance_money_sign.setStyleSheet("font-family: Eczar; font: 12pt; background: #424242; color: white;")
+        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
+        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
+
+        # account_box4.setContentsMargins(0, 0, 0, 0)
+        account_box4.addLayout(accounts_name_box4)
+        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
+        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+        return account_box4
+
+    def credit_card_box(self):
+        credit_card_box_3 = QHBoxLayout()
+
+        credit_card_name_3 = QVBoxLayout()
+        credit_card_pixmap_3 = QPixmap("lib/mastercard.png")
+        credit_card_pixmap_3 = credit_card_pixmap_3.scaled(QSize(50, 50), Qt.KeepAspectRatio)
+        credit_card_label_3 = QLabel()
+        credit_card_label_3.setPixmap(credit_card_pixmap_3)
+        credit_card_number_label_3 = QLabel("xxxx-xxxx-xxxx-0852")
+        credit_card_name_3.addWidget(credit_card_label_3)
+        credit_card_name_3.addWidget(credit_card_number_label_3)
+
+        credit_card_balance_box_3 = QHBoxLayout()
+        credit_card_balance_label_3 = QLabel("Min: $0.00 Total: $0.00 \n \n Due date 6/26/2017")
+        credit_card_balance_box_3.addWidget(credit_card_balance_label_3)
+        credit_card_balance_box_3.setDirection(QBoxLayout.RightToLeft)
+        credit_card_balance_box_3.addStretch(1)
+
+        credit_card_box_3.addLayout(credit_card_name_3)
+        credit_card_box_3.addLayout(credit_card_balance_box_3)
+        return credit_card_box_3
 
 
 class MainWindow2(QMainWindow):
@@ -345,7 +335,11 @@ def main():
 
     data = [go.Scatter(x=df.Date, y=df['AAPL.High'])]
 
-    py.plot(data, filename='time-series-simple.html', auto_open=False)
+    layout = go.Layout(paper_bgcolor='rgb(66,66,66)', plot_bgcolor='rgb(66,66,66)')
+
+    fig = go.Figure(data=data, layout=layout)
+
+    py.plot(fig, filename='time-series-simple.html', auto_open=False)
 
     app = QApplication(sys.argv)
     GUI = MainWindow()
