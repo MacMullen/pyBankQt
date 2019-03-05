@@ -3,13 +3,10 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FingureCanvas
+from matplotlib.figure import Figure
 import sys
-
-import plotly.offline as py
-import plotly.graph_objs as go
-
-import pandas as pd
-from datetime import datetime
+import numpy as np
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
@@ -36,10 +33,9 @@ class MainWindow(QMainWindow):
         bank_list_dropdown.addItems(bank_list)
         # bank_list_dropdown.activated.connect(None)
 
-        total_balance_groupbox = QGroupBox("")
-        total_balance_groupbox.setLayout(self.total_balance_box())
-        total_balance_groupbox.setMaximumWidth(360)
-        total_balance_groupbox.setStyleSheet("""
+        self.total_balance_groupbox = QGroupBox("")
+        self.total_balance_groupbox.setLayout(self.total_balance_box())
+        self.total_balance_groupbox.setStyleSheet("""
             QGroupBox {
                border: 0px;
                background: #37373F;
@@ -47,7 +43,6 @@ class MainWindow(QMainWindow):
 
         total_balance_groupbox2 = QGroupBox("")
         total_balance_groupbox2.setLayout(self.credit_card_box())
-        total_balance_groupbox2.setMaximumWidth(360)
         total_balance_groupbox2.setStyleSheet("""
             QGroupBox {
                border: 0px;
@@ -81,7 +76,7 @@ class MainWindow(QMainWindow):
         select_bank_layout.addStretch(1)
 
         total_balance_layout = QHBoxLayout()
-        total_balance_layout.addWidget(total_balance_groupbox)
+        total_balance_layout.addWidget(self.total_balance_groupbox)
 
         total_balance_layout2 = QHBoxLayout()
         total_balance_layout2.addWidget(total_balance_groupbox2)
@@ -89,14 +84,9 @@ class MainWindow(QMainWindow):
         total_balance_layout3 = QHBoxLayout()
         total_balance_layout3.addWidget(self.total_balance_groupbox3)
 
-        view = QWebEngineView()
-        view.load(QUrl.fromLocalFile(QFileInfo("time-series-simple.html").absoluteFilePath()))
-        view.setMaximumHeight(300)
-        view.setStyleSheet("background: transparent;")
-        view.page().setBackgroundColor(Qt.transparent)
         graph_box = QGroupBox()
         graph_layout = QHBoxLayout()
-        graph_layout.addWidget(view)
+        graph_layout.addWidget(Canvas(self, width=5, height=5))
         graph_layout.setContentsMargins(0, 0, 0, 0)
         graph_box.setLayout(graph_layout)
         graph_box.setStyleSheet("""
@@ -202,15 +192,15 @@ class MainWindow(QMainWindow):
         color_strip_1 = QFrame()
         color_strip_1.setStyleSheet("background: #1cd19a")
         color_strip_1.setFixedHeight(2)
-        color_strip_1.setFixedWidth(180)
+        color_strip_1.setFixedWidth(100)
         color_strip_2 = QFrame()
         color_strip_2.setStyleSheet("background: #287e6a")
         color_strip_2.setFixedHeight(2)
-        color_strip_2.setFixedWidth(120)
+        color_strip_2.setFixedWidth(400)
         color_strip_3 = QFrame()
         color_strip_3.setStyleSheet("background: #16534a")
         color_strip_3.setFixedHeight(2)
-        color_strip_3.setFixedWidth(50)
+        color_strip_3.setFixedWidth(100)
 
         color_layout = QHBoxLayout()
         color_layout.setContentsMargins(0, 0, 0, 0)
@@ -219,7 +209,12 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip_3, 0, Qt.AlignLeft)
         color_layout.setSpacing(0)
 
-        total_balance_box.addLayout(color_layout)
+        color_widget = QWidget()
+        color_widget.setLayout(color_layout)
+        print(self.total_balance_groupbox.geometry().width())
+        color_widget.setMaximumWidth(390)
+
+        total_balance_box.addWidget(color_widget)
         total_balance_box.addWidget(self.account_box(money="30146.89"))
         total_balance_box.addWidget(self.account_box(money="0.00"))
         total_balance_box.addWidget(self.account_box(money="30146.89"))
@@ -420,17 +415,24 @@ class MainWindow2(QMainWindow):
         event.accept()
 
 
+class Canvas(FingureCanvas):
+    def __init__(self, parent=None, width=5, height=5, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig.set_facecolor("#37373F")
+
+        FingureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        self.plot()
+
+    def plot(self):
+        ax = self.figure.add_subplot(111)
+        x_range = ["Week 1", "Week 2", "Week 3", "Week 4"]
+        y_range = [100, 100, 450, 380]
+        ax.plot(x_range, y_range, linestyle='-', marker="o", color="#1EB980", linewidth=2)
+        ax.fill_between(x_range, y_range, facecolor="#32333d")
+        ax.patch.set_facecolor("#37373F")
 def main():
-    df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
-    data = [go.Scatter(x=[0, 1, 2, 5, 8, 7], y=[1, 2, 3, 4, 5, 6], mode="lines+markers+text",
-                       line=dict(color="rgb(30, 185, 128)"), text=[1, 2, 3, 4, 5, 6], textposition="top center",
-                       fill='tonexty')]
-    layout = go.Layout(paper_bgcolor='rgb(55,55,63)', plot_bgcolor='rgb(55,55,63)',
-                       font=dict(family="Roboto", size=15, color='rgb(255,255,255)'))
-    fig = go.Figure(data=data, layout=layout)
-
-    py.plot(fig, filename='time-series-simple.html', auto_open=False)
-
     app = QApplication(sys.argv)
     GUI = MainWindow()
     app.exec_()
