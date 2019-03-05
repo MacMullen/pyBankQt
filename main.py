@@ -370,9 +370,7 @@ def main():
                        line=dict(color="rgb(30, 185, 128)"), text=[1, 2, 3, 4, 5, 6], textposition="top center",
                        fill='tonexty')]
     layout = go.Layout(paper_bgcolor='rgb(66,66,66)', plot_bgcolor='rgb(66,66,66)',
-                       font=dict(family="Roboto", size=15, color='rgb(255,255,255)'),
-                       autosize=False, width=620, height=280,
-                       margin=go.layout.Margin(l=50, r=50, b=50, t=50, pad=0))
+                       font=dict(family="Roboto", size=15, color='rgb(255,255,255)'))
     fig = go.Figure(data=data, layout=layout)
 
     py.plot(fig, filename='time-series-simple.html', auto_open=False)
