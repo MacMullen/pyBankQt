@@ -189,32 +189,16 @@ class MainWindow(QMainWindow):
         see_all_label.setStyleSheet(
             "font: 12pt bold 'Roboto Condensed'; background: #37373F; color: white; border: 0px; font-weight: bold;")
 
-        color_strip_1 = QFrame()
-        color_strip_1.setStyleSheet("background: #1cd19a")
-        color_strip_1.setFixedHeight(2)
-        color_strip_1.setFixedWidth(100)
-        color_strip_2 = QFrame()
-        color_strip_2.setStyleSheet("background: #287e6a")
-        color_strip_2.setFixedHeight(2)
-        color_strip_2.setFixedWidth(400)
-        color_strip_3 = QFrame()
-        color_strip_3.setStyleSheet("background: #16534a")
-        color_strip_3.setFixedHeight(2)
-        color_strip_3.setFixedWidth(100)
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #1cd19a, stop:0.3 #1cd19a, stop:0.3001 #287e6a, stop:0.6 #287e6a, stop:0.6001 #16534a, stop:1 #16534a);")
+        color_strip.setFixedHeight(2)
 
         color_layout = QHBoxLayout()
         color_layout.setContentsMargins(0, 0, 0, 0)
-        color_layout.addWidget(color_strip_1, 0, Qt.AlignLeft)
-        color_layout.addWidget(color_strip_2, 0, Qt.AlignLeft)
-        color_layout.addWidget(color_strip_3, 0, Qt.AlignLeft)
-        color_layout.setSpacing(0)
+        color_layout.addWidget(color_strip)
 
-        color_widget = QWidget()
-        color_widget.setLayout(color_layout)
-        print(self.total_balance_groupbox.geometry().width())
-        color_widget.setMaximumWidth(390)
-
-        total_balance_box.addWidget(color_widget)
+        total_balance_box.addLayout(color_layout)
         total_balance_box.addWidget(self.account_box(money="30146.89"))
         total_balance_box.addWidget(self.account_box(money="0.00"))
         total_balance_box.addWidget(self.account_box(money="30146.89"))
@@ -240,7 +224,7 @@ class MainWindow(QMainWindow):
             "font-family: Roboto; font: 10pt; background: #37373F; color: white; font-weight: bold;")
         credit_card_min_payment_value = QLabel("$250.58 ")
         credit_card_min_payment_value.setStyleSheet(
-            "font-family: Roboto; font: 24pt; background: #37373F; color: #ff9d3f; font-weight: bold;")
+            "font-family: Roboto; font: 24pt; background: #37373F; color: #ffac12; font-weight: bold;")
         credit_card_min_payment_layout = QVBoxLayout()
         credit_card_min_payment_layout.addWidget(credit_card_min_payment_title, 0, Qt.AlignRight)
         credit_card_min_payment_layout.addWidget(credit_card_min_payment_value, 0, Qt.AlignRight)
@@ -267,10 +251,15 @@ class MainWindow(QMainWindow):
         see_all_layout.addWidget(see_all_label)
 
         color_strip = QFrame()
-        color_strip.setStyleSheet("background: white;")
+        color_strip.setStyleSheet(
+            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #ffdc78, stop:0.2 #ffdc78, stop:0.2001 #d85f4e, stop:0.5 #d85f4e, stop:0.5001 #ffac12, stop:1 #ffac12);")
         color_strip.setFixedHeight(2)
 
-        credit_card_box.addWidget(color_strip)
+        color_layout = QHBoxLayout()
+        color_layout.setContentsMargins(0, 0, 0, 0)
+        color_layout.addWidget(color_strip)
+
+        credit_card_box.addLayout(color_layout)
         credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard"))
         credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa"))
         credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa"))
