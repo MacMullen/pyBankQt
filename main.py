@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.resize(1280, 720)
         self.setWindowTitle("PyBank")
-        self.setWindowIcon(QIcon('/lib/ic_account_balance_2x.png'))
+        self.setWindowIcon(QIcon('lib/ic_account_balance_2x.png'))
         bank_list_dropdown = QComboBox()
         bank_list_dropdown.move(800, 10)
         bank_list_dropdown.setFixedSize(200, 30)
@@ -77,8 +77,8 @@ class MainWindow(QMainWindow):
 
         graph_box = QGroupBox()
         graph_layout = QHBoxLayout()
-        graph_layout.addWidget(Canvas(self, width=5, height=5))
         graph_layout.setContentsMargins(0, 0, 0, 0)
+        graph_layout.addWidget(Canvas(self, width=6, height=7))
         graph_box.setLayout(graph_layout)
         graph_box.setStyleSheet("""
             QGroupBox {
@@ -94,20 +94,21 @@ class MainWindow(QMainWindow):
 
         balance_information_layout = QHBoxLayout()
 
-        balance_information_groupbox = QGroupBox("")
-        balance_information_groupbox_layout = QVBoxLayout()
-        balance_information_groupbox.setLayout(balance_information_groupbox_layout)
-        balance_information_groupbox.setStyleSheet("""
+        balance_histogram_groupbox = QGroupBox("")
+        balance_histogram_groupbox_layout = QVBoxLayout()
+        balance_histogram_title = QLabel("Histogram")
+        balance_histogram_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        balance_histogram_groupbox_layout.addWidget(balance_histogram_title)
+        balance_histogram_groupbox_layout.addWidget(self.histogram_box())
+        balance_histogram_groupbox.setLayout(balance_histogram_groupbox_layout)
+        balance_histogram_groupbox.setStyleSheet("""
             QGroupBox {
                border: 0px;
                background: #282828;
                }""")
 
-        new_layout = QHBoxLayout()
-        new_layout.addWidget(balance_information_groupbox)
-
         balance_information_layout.setContentsMargins(10, 0, 10, 0)
-        balance_information_layout.addLayout(new_layout)
+        balance_information_layout.addWidget(balance_histogram_groupbox)
         balance_information_layout.addWidget(graph_box)
 
         bank_data_layout = QVBoxLayout()
@@ -192,10 +193,10 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         total_balance_box.addLayout(color_layout)
-        total_balance_box.addWidget(self.account_box(money="30146.89"))
-        total_balance_box.addWidget(self.account_box(money="0.00"))
-        total_balance_box.addWidget(self.account_box(money="30146.89"))
-        total_balance_box.addWidget(self.account_box(money="60293.78"))
+        total_balance_box.addWidget(self.account_box(money="30146.89", color="#005D57"))
+        total_balance_box.addWidget(self.account_box(money="0.00", color="#04B97F"))
+        total_balance_box.addWidget(self.account_box(money="301406.89", color="#37EFBA"))
+        total_balance_box.addWidget(self.account_box(money="60293.78", color="#37EFBA"))
         total_balance_box.addWidget(see_all_label)
         return total_balance_box
 
@@ -226,10 +227,10 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         total_balance_box.addLayout(color_layout)
-        total_balance_box.addWidget(self.investment_box(money="10000.00", empty=False))
-        total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False))
-        total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True))
-        total_balance_box.addWidget(self.investment_box(money="60293.78", empty=True))
+        total_balance_box.addWidget(self.investment_box(money="10000.00", empty=False, color="#B15DFF"))
+        total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False, color="#72DEFF"))
+        total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True, color=None))
+        total_balance_box.addWidget(self.investment_box(money="60293.78", empty=True, color=None))
         total_balance_box.addWidget(see_all_label)
         return total_balance_box
 
@@ -287,10 +288,10 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         credit_card_box.addLayout(color_layout)
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard"))
+        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#FFDC78"))
+        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#d85f4e"))
+        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#ffac12"))
+        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#ffac12"))
         credit_card_box.addLayout(see_all_layout)
 
         return credit_card_box
@@ -301,7 +302,7 @@ class MainWindow(QMainWindow):
         self.mainwindow2.show()
         self.hide()
 
-    def account_box(self, money):
+    def account_box(self, money, color):
         account_box4 = QHBoxLayout()
 
         accounts_name_box4 = QVBoxLayout()
@@ -326,9 +327,16 @@ class MainWindow(QMainWindow):
         account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
 
         # account_box4.setContentsMargins(0, 0, 0, 0)
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: {};".format(color))
+        color_strip.setFixedWidth(2)
+
+        account_box4.addWidget(color_strip)
         account_box4.addLayout(accounts_name_box4)
         account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
         account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+
 
         frame = QWidget()
         frame.setObjectName("Frame")
@@ -340,7 +348,7 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def investment_box(self, money, empty):
+    def investment_box(self, money, empty, color):
         account_box4 = QHBoxLayout()
 
         accounts_name_box4 = QVBoxLayout()
@@ -377,6 +385,12 @@ class MainWindow(QMainWindow):
         account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
 
         # account_box4.setContentsMargins(0, 0, 0, 0)
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: {};".format(color))
+        color_strip.setFixedWidth(2)
+
+        account_box4.addWidget(color_strip)
         account_box4.addLayout(accounts_name_box4)
         account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
         account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
@@ -397,7 +411,7 @@ class MainWindow(QMainWindow):
                    }""")
         return frame
 
-    def credit_card_balance(self, cc_type):
+    def credit_card_balance(self, cc_type, color):
         credit_card_box4 = QHBoxLayout()
 
         credit_cards_name_box4 = QVBoxLayout()
@@ -418,7 +432,13 @@ class MainWindow(QMainWindow):
         credit_card_balance_box4.setContentsMargins(0, 0, 0, 0)
         credit_card_balance_box4.addStretch(1)
 
-        credit_card_box4.setContentsMargins(0, 0, 0, 0)
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: {};".format(color))
+        color_strip.setFixedWidth(2)
+
+        # credit_card_box4.setContentsMargins(0, 0, 0, 0)
+        credit_card_box4.addWidget(color_strip)
         credit_card_box4.addLayout(credit_cards_name_box4)
         credit_card_box4.addLayout(credit_card_balance_box4)
 
@@ -432,47 +452,54 @@ class MainWindow(QMainWindow):
         frame.setLayout(credit_card_box4)
         return frame
 
-    def latest_transactions(self):
-        layout = QVBoxLayout()
+    def histogram_box(self):
+        account_box4 = QHBoxLayout()
 
-        for i in range(0, 10):
-            layout.addWidget(self.transcation_item("01/02", 200, "Debit"))
-            layout.addWidget(self.transcation_item("01/02", -200, "Money Transfer and payments"))
+        accounts_name_box4 = QVBoxLayout()
+        account_name_label4 = QLabel("Bank 2 Savings")
+        account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_number_label4 = QLabel("xxxx-xxxx-xxxx-9658")
+        account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        accounts_name_box4.setContentsMargins(0, 0, 0, 0)
+        accounts_name_box4.addWidget(account_name_label4, 0, Qt.AlignBottom)
+        accounts_name_box4.addWidget(account_number_label4, 0, Qt.AlignTop)
 
-        layout.setContentsMargins(0, 0, 0, 0)
-        return layout
+        account_balance_box4 = QHBoxLayout()
+        account_balance_label4 = QLabel("5000")
+        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_balance_box4.addWidget(account_balance_label4, Qt.AlignCenter)
+        account_balance_box4.addStretch(1)
 
-    def transcation_item(self, date, amount, description):
-        credit_card_box4 = QHBoxLayout()
+        account_balance_money_sign_layout = QHBoxLayout()
+        account_balance_money_sign = QLabel("$")
+        account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
+        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
 
-        credit_card_name_label4 = QLabel(date)
-        credit_card_name_label4.setStyleSheet("font-family: Roboto; font: 14pt; background: #282828; color: white;")
+        # account_box4.setContentsMargins(0, 0, 0, 0)
+        account_box4.addLayout(accounts_name_box4)
+        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
+        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #B15DFF, stop:0.3 #B15DFF, stop:0.3001 #72DEFF, stop:1 #72DEFF);")
+        color_strip.setFixedHeight(90)
 
-        credit_card_number_label4 = QLabel(description)
-        credit_card_number_label4.setStyleSheet("font-family: Roboto; font: 14pt; background: #282828; color: grey;")
+        color_layout = QHBoxLayout()
+        color_layout.setContentsMargins(0, 0, 0, 0)
+        color_layout.addWidget(color_strip)
 
-        credit_card_balance_label4 = QLabel("$" + str(amount))
-        if amount >= 0:
-            credit_card_balance_label4.setStyleSheet(
-                "font-family: Roboto; font: 14pt; background: #282828; color: #1EB980;")
-        else:
-            credit_card_balance_label4.setStyleSheet(
-                "font-family: Roboto; font: 14pt; background: #282828; color: #FF6589;")
-        credit_card_box4.setContentsMargins(0, 10, 0, 10)
-        credit_card_box4.addWidget(credit_card_name_label4)
-        credit_card_box4.addWidget(credit_card_number_label4, 0, Qt.AlignCenter)
-        credit_card_box4.addWidget(credit_card_balance_label4, 0, Qt.AlignRight)
-        credit_card_box4.setAlignment(Qt.AlignTop)
+        account_box4.addLayout(color_layout)
+
         frame = QWidget()
         frame.setObjectName("Frame")
+        frame.setLayout(account_box4)
         frame.setStyleSheet("""
             QWidget#Frame {
                border-bottom: 1px solid #33333D;
                background: transparent;
                }""")
-        frame.setLayout(credit_card_box4)
         return frame
-
 
 class MainWindow2(QMainWindow):
     # QMainWindow doesn't have a closed signal, so we'll make one.
@@ -492,11 +519,14 @@ class Canvas(FingureCanvas):
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         fig.set_facecolor("#282828")
+        something = fig.get_axes()
 
         FingureCanvas.__init__(self, fig)
         self.setParent(parent)
 
         self.plot()
+        fig.get_axes()[0].xaxis.set_ticklabels([])
+        fig.get_axes()[0].yaxis.set_ticklabels([])
 
     def plot(self):
         ax = self.figure.add_subplot(111)
@@ -505,6 +535,8 @@ class Canvas(FingureCanvas):
         ax.plot(x_range, y_range, linestyle='-', marker="o", color="#1EB980", linewidth=2)
         ax.fill_between(x_range, y_range, facecolor="#32333d")
         ax.patch.set_facecolor("#282828")
+        for spine in ax.spines:
+            ax.spines[spine].set_color("white")
 
 
 def main():
