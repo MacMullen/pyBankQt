@@ -1,8 +1,6 @@
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FingureCanvas
-from matplotlib.figure import Figure
 import sys
 import time
 
@@ -29,7 +27,6 @@ class MainWindow(QMainWindow):
         bank_list_dropdown.move(800, 10)
         bank_list_dropdown.setFixedSize(200, 30)
         bank_list_dropdown.addItems(bank_list)
-        # bank_list_dropdown.activated.connect(None)
 
         self.total_balance_groupbox = QGroupBox("")
         self.total_balance_groupbox.setLayout(self.total_balance_box())
@@ -77,13 +74,13 @@ class MainWindow(QMainWindow):
 
         transactions_box = QGroupBox()
         transactions_layout = QVBoxLayout()
-        histogram_title = QLabel("Latest Transactions")
-        histogram_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        transactions_layout.addWidget(histogram_title)
-        transactions_layout.addWidget(self.latest_transactions_box())
-        transactions_layout.addWidget(self.latest_transactions_box())
-        transactions_layout.addWidget(self.latest_transactions_box())
-        transactions_layout.addWidget(self.latest_transactions_box())
+        transactions_title = QLabel("Latest Transactions")
+        transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        transactions_layout.addWidget(transactions_title)
+        transactions_layout.addWidget(self.latest_transactions_box("40"))
+        transactions_layout.addWidget(self.latest_transactions_box("100"))
+        transactions_layout.addWidget(self.latest_transactions_box("1000"))
+        transactions_layout.addWidget(self.latest_transactions_box("20000"))
         transactions_box.setLayout(transactions_layout)
         transactions_box.setStyleSheet("""
             QGroupBox {
@@ -163,8 +160,6 @@ class MainWindow(QMainWindow):
         self.base_layout.setLayout(self.home_window)
 
         self.show()
-
-        # loading_screen = self.newWindow()
 
     def hide_summary_data(self, item):
         if item.text() == "Overview":
@@ -287,12 +282,6 @@ class MainWindow(QMainWindow):
 
         return credit_card_box
 
-    def newWindow(self):
-        self.mainwindow2 = MainWindow2(self)
-        self.mainwindow2.closed.connect(self.show)
-        self.mainwindow2.show()
-        self.hide()
-
     def account_box(self, money, color):
         account_box4 = QHBoxLayout()
 
@@ -327,7 +316,6 @@ class MainWindow(QMainWindow):
         account_box4.addLayout(accounts_name_box4)
         account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
         account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
-
 
         frame = QWidget()
         frame.setObjectName("Frame")
@@ -375,7 +363,6 @@ class MainWindow(QMainWindow):
         account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
         account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
 
-        # account_box4.setContentsMargins(0, 0, 0, 0)
         color_strip = QFrame()
         color_strip.setStyleSheet(
             "background: {};".format(color))
@@ -428,7 +415,6 @@ class MainWindow(QMainWindow):
             "background: {};".format(color))
         color_strip.setFixedWidth(2)
 
-        # credit_card_box4.setContentsMargins(0, 0, 0, 0)
         credit_card_box4.addWidget(color_strip)
         credit_card_box4.addLayout(credit_cards_name_box4)
         credit_card_box4.addLayout(credit_card_balance_box4)
@@ -446,86 +432,68 @@ class MainWindow(QMainWindow):
     def bills_box(self):
         account_box4 = QHBoxLayout()
 
-        account_name_label4_layout = QHBoxLayout()
-        account_name_label4 = QLabel("Bank 2 Savings")
+        account_name_label4 = QLabel("Market Buying")
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_name_label4_layout = QHBoxLayout()
         account_name_label4_layout.addWidget(account_name_label4)
 
-        account_number_label4_layout = QHBoxLayout()
-        account_number_label4_layout.setContentsMargins(80, 0, 0, 0)
-        account_number_label4 = QLabel("Due date:")
+        account_number_label4 = QLabel("Due Date: 02/01/2019")
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
-        account_number_label4_layout.setDirection(QBoxLayout.RightToLeft)
-        account_number_label4_layout.addStretch(1)
 
-        account_balance_box4 = QHBoxLayout()
-        account_balance_label4 = QLabel("9999999")
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_box4.addWidget(account_balance_label4)
-        account_balance_box4.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box4.addStretch(1)
-
-        account_balance_money_sign_layout = QHBoxLayout()
-        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
+        account_balance_label4 = QLabel("800")
+        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: red;")
+        account_balance_label4.setMaximumWidth(100)
+        account_balance_label4.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         account_balance_money_sign = QLabel("$")
         account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
-        account_balance_money_sign_layout.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box4.addStretch(1)
+        account_balance_money_sign.setMaximumWidth(10)
+        account_balance_label4_layout = QHBoxLayout()
+        account_balance_label4_layout.addWidget(account_balance_money_sign, 0)
+        account_balance_label4_layout.addWidget(account_balance_label4, 0)
 
-        # account_box4.setContentsMargins(0, 0, 0, 0)
         account_box4.addLayout(account_name_label4_layout)
-        account_box4.addLayout(account_number_label4_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+        account_box4.addLayout(account_number_label4_layout)
+        account_box4.addLayout(account_balance_label4_layout)
 
         frame = QWidget()
         frame.setObjectName("Frame")
         frame.setLayout(account_box4)
         frame.setStyleSheet("""
-            QWidget#Frame {
-               border-bottom: 1px solid #33333D;
-               background: transparent;
-               }""")
+                    QWidget#Frame {
+                       border-bottom: 1px solid #33333D;
+                       background: transparent;
+                       }""")
         return frame
 
-    def latest_transactions_box(self):
+    def latest_transactions_box(self, var: str):
         account_box4 = QHBoxLayout()
 
-        account_name_label4_layout = QHBoxLayout()
         account_name_label4 = QLabel("Market Buying")
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_name_label4_layout = QHBoxLayout()
         account_name_label4_layout.addWidget(account_name_label4)
 
-        account_number_label4_layout = QHBoxLayout()
-        account_number_label4_layout.setContentsMargins(80, 0, 0, 0)
         account_number_label4 = QLabel("Date: 02/01/2019 02:43PM")
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
-        # account_number_label4_layout.setDirection(QBoxLayout.RightToLeft)
-        # account_number_label4_layout.addStretch(1)
 
-        account_balance_box4 = QHBoxLayout()
-        account_balance_label4 = QLabel("9999999")
+        account_balance_label4 = QLabel(var)
         account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: red;")
-        account_balance_box4.addWidget(account_balance_label4)
-        account_balance_box4.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box4.addStretch(1)
-
-        account_balance_money_sign_layout = QHBoxLayout()
-        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
+        account_balance_label4.setMaximumWidth(100)
+        account_balance_label4.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         account_balance_money_sign = QLabel("$")
         account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
-        account_balance_money_sign_layout.setDirection(QBoxLayout.RightToLeft)
-        account_balance_box4.addStretch(1)
+        account_balance_money_sign.setMaximumWidth(10)
+        account_balance_label4_layout = QHBoxLayout()
+        account_balance_label4_layout.addWidget(account_balance_money_sign, 0)
+        account_balance_label4_layout.addWidget(account_balance_label4, 0)
 
-        # account_box4.setContentsMargins(0, 0, 0, 0)
         account_box4.addLayout(account_name_label4_layout)
-        account_box4.addLayout(account_number_label4_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+        account_box4.addLayout(account_number_label4_layout)
+        account_box4.addLayout(account_balance_label4_layout)
 
         frame = QWidget()
         frame.setObjectName("Frame")
