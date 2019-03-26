@@ -418,18 +418,18 @@ class MainWindow(QMainWindow):
         return frame
 
     def credit_card_balance(self, cc: example.CreditCard, color):
-        credit_card_box4 = QHBoxLayout()
+        credit_card_box = QHBoxLayout()
 
-        credit_cards_name_box4 = QVBoxLayout()
-        credit_card_name_label4 = QLabel(cc.cc_type)
-        credit_card_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_number_label4 = QLabel(cc.card_number)
-        credit_card_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        credit_cards_name_box4.setContentsMargins(0, 0, 0, 0)
-        credit_cards_name_box4.addWidget(credit_card_name_label4, 0, Qt.AlignBottom)
-        credit_cards_name_box4.addWidget(credit_card_number_label4, 0, Qt.AlignTop)
+        credit_card_name_layout = QVBoxLayout()
+        credit_card_type_label = QLabel(cc.cc_type)
+        credit_card_type_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        credit_card_number_label = QLabel(cc.card_number)
+        credit_card_number_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        credit_card_name_layout.setContentsMargins(0, 0, 0, 0)
+        credit_card_name_layout.addWidget(credit_card_type_label, 0, Qt.AlignBottom)
+        credit_card_name_layout.addWidget(credit_card_number_label, 0, Qt.AlignTop)
 
-        credit_card_balance_box4 = QHBoxLayout()
+        credit_card_balance_layout = QHBoxLayout()
         credit_card_min_payment_label = QLabel("Min: $" + str(cc.min_payment))
         credit_card_max_payment_label = QLabel("Total: $" + str(cc.max_payment))
         credit_card_min_payment_label.setStyleSheet(
@@ -438,19 +438,19 @@ class MainWindow(QMainWindow):
             "font-family: Roboto; font: 10pt; background: #282828; color: white;")
         credit_card_min_payment_label.setMinimumWidth(100)
         credit_card_max_payment_label.setMinimumWidth(100)
-        credit_card_balance_box4.addWidget(credit_card_min_payment_label)
-        credit_card_balance_box4.addWidget(credit_card_max_payment_label)
-        credit_card_balance_box4.setDirection(QBoxLayout.RightToLeft)
-        credit_card_balance_box4.addStretch(1)
+        credit_card_balance_layout.addWidget(credit_card_min_payment_label)
+        credit_card_balance_layout.addWidget(credit_card_max_payment_label)
+        credit_card_balance_layout.setDirection(QBoxLayout.RightToLeft)
+        credit_card_balance_layout.addStretch(1)
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
             "background: {};".format(color))
         color_strip.setFixedWidth(2)
 
-        credit_card_box4.addWidget(color_strip)
-        credit_card_box4.addLayout(credit_cards_name_box4)
-        credit_card_box4.addLayout(credit_card_balance_box4)
+        credit_card_box.addWidget(color_strip)
+        credit_card_box.addLayout(credit_card_name_layout)
+        credit_card_box.addLayout(credit_card_balance_layout)
 
         frame = QWidget()
         frame.setObjectName("Frame")
@@ -459,7 +459,7 @@ class MainWindow(QMainWindow):
                border-bottom: 1px solid #33333D;
                background: transparent;
                }""")
-        frame.setLayout(credit_card_box4)
+        frame.setLayout(credit_card_box)
         return frame
 
     def bills_box(self, bill_name: str, due_date: str, amount: int):
@@ -476,7 +476,7 @@ class MainWindow(QMainWindow):
         account_number_label4_layout.addWidget(account_number_label4)
 
         account_balance_label4 = QLabel(str(amount))
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: red;")
+        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
         account_balance_label4.setMaximumWidth(75)
         account_balance_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         account_balance_money_sign = QLabel("$")
@@ -523,7 +523,7 @@ class MainWindow(QMainWindow):
         account_balance_label4 = QLabel(str(amount))
         if amount < 0:
             account_balance_label4.setStyleSheet(
-                "font-family: Roboto; font: 12pt; background: #282828; color: #e53935;")
+                "font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
         else:
             account_balance_label4.setStyleSheet(
                 "font-family: Roboto; font: 12pt; background: #282828; color: #1EB980;")
