@@ -11,6 +11,7 @@ import example
 bank_list = []
 accounts_list = []
 credit_cars_list = []
+investments_list = []
 
 
 def center(main_window: QMainWindow):
@@ -244,10 +245,12 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         total_balance_box.addLayout(color_layout)
-        total_balance_box.addWidget(self.investment_box(money="10000.00", empty=False, color="#B15DFF"))
-        total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False, color="#72DEFF"))
-        total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True, color=None))
-        total_balance_box.addWidget(self.investment_box(money="60293.78", empty=True, color=None))
+        for investment in investments_list:
+            total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
+        # total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
+        # total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False, color="#72DEFF"))
+        # total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True, color=None))
+        # total_balance_box.addWidget(self.investment_box(money="60293.78", empty=True, color=None))
         return total_balance_box
 
     def credit_card_box(self):
@@ -303,7 +306,7 @@ class MainWindow(QMainWindow):
 
         credit_card_box.addLayout(color_layout)
         for cc in credit_cars_list:
-            credit_card_box.addWidget(self.credit_card_balance(cc, color="white"))
+            credit_card_box.addWidget(self.cc_box(cc, color="white"))
         # credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#FFDC78"))
         # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#d85f4e"))
         # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#ffac12"))
@@ -355,70 +358,8 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def investment_box(self, money, empty, color):
-        account_box4 = QHBoxLayout()
-
-        accounts_name_box4 = QVBoxLayout()
-        if empty:
-            account_name_label4 = QLabel("")
-        else:
-            account_name_label4 = QLabel("Fixed-term Deposit")
-        account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        if empty:
-            account_number_label4 = QLabel("")
-        else:
-            account_number_label4 = QLabel("Bank 2")
-        account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        accounts_name_box4.setContentsMargins(0, 0, 0, 0)
-        accounts_name_box4.addWidget(account_name_label4, 0, Qt.AlignBottom)
-        accounts_name_box4.addWidget(account_number_label4, 0, Qt.AlignTop)
-
-        account_balance_box4 = QHBoxLayout()
-        if empty:
-            account_balance_label4 = QLabel("")
-        else:
-            account_balance_label4 = QLabel(money)
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_box4.addWidget(account_balance_label4, Qt.AlignCenter)
-        account_balance_box4.addStretch(1)
-
-        account_balance_money_sign_layout = QHBoxLayout()
-        if empty:
-            account_balance_money_sign = QLabel("")
-        else:
-            account_balance_money_sign = QLabel("$")
-        account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
-        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
-
-        color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: {};".format(color))
-        color_strip.setFixedWidth(2)
-
-        account_box4.addWidget(color_strip)
-        account_box4.addLayout(accounts_name_box4)
-        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
-
-        frame = QWidget()
-        frame.setObjectName("Frame")
-        frame.setLayout(account_box4)
-        if not empty:
-            frame.setStyleSheet("""
-                QWidget#Frame {
-                   border-bottom: 1px solid #33333D;
-                   background: transparent;
-                   }""")
-        else:
-            frame.setStyleSheet("""
-                QWidget#Frame {
-                   background: transparent;
-                   }""")
-        return frame
-
-    def credit_card_balance(self, cc: example.CreditCard, color):
-        credit_card_box = QHBoxLayout()
+    def cc_box(self, cc: example.CreditCard, color):
+        credit_card_box_layout = QHBoxLayout()
 
         credit_card_name_layout = QVBoxLayout()
         credit_card_type_label = QLabel(cc.cc_type)
@@ -448,9 +389,9 @@ class MainWindow(QMainWindow):
             "background: {};".format(color))
         color_strip.setFixedWidth(2)
 
-        credit_card_box.addWidget(color_strip)
-        credit_card_box.addLayout(credit_card_name_layout)
-        credit_card_box.addLayout(credit_card_balance_layout)
+        credit_card_box_layout.addWidget(color_strip)
+        credit_card_box_layout.addLayout(credit_card_name_layout)
+        credit_card_box_layout.addLayout(credit_card_balance_layout)
 
         frame = QWidget()
         frame.setObjectName("Frame")
@@ -459,7 +400,54 @@ class MainWindow(QMainWindow):
                border-bottom: 1px solid #33333D;
                background: transparent;
                }""")
-        frame.setLayout(credit_card_box)
+        frame.setLayout(credit_card_box_layout)
+        return frame
+
+    def investment_box(self, investment: example.Investment, color):
+        investment_box_layout = QHBoxLayout()
+
+        investment_name_layout = QVBoxLayout()
+        investment_name_label = QLabel(investment.name)
+        investment_name_label.setMinimumWidth(100)
+        investment_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        investment_currency_label = QLabel(investment.currency)
+        investment_currency_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        investment_name_layout.addWidget(investment_name_label)
+        investment_name_layout.addWidget(investment_currency_label)
+
+        investment_type_layout = QHBoxLayout()
+        investment_type_label = QLabel(investment.type)
+        investment_type_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        investment_type_layout.addWidget(investment_type_label)
+
+        investment_balance_layout = QHBoxLayout()
+        investment_balance_label = QLabel(str(investment.balance))
+        investment_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        investment_balance_label.setMaximumWidth(75)
+        investment_money_sign_label = QLabel("$")
+        investment_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        investment_money_sign_label.setMaximumWidth(10)
+        investment_balance_layout.addWidget(investment_money_sign_label)
+        investment_balance_layout.addWidget(investment_balance_label)
+
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: {};".format(color))
+        color_strip.setFixedWidth(2)
+
+        investment_box_layout.addWidget(color_strip)
+        investment_box_layout.addLayout(investment_name_layout)
+        investment_box_layout.addLayout(investment_type_layout)
+        investment_box_layout.addLayout(investment_balance_layout, Qt.AlignRight)
+
+        frame = QWidget()
+        frame.setObjectName("Frame")
+        frame.setLayout(investment_box_layout)
+        frame.setStyleSheet("""
+                    QWidget#Frame {
+                       border-bottom: 1px solid #33333D;
+                       background: transparent;
+                       }""")
         return frame
 
     def bills_box(self, bill_name: str, due_date: str, amount: int):
@@ -559,6 +547,8 @@ if __name__ == "__main__":
             accounts_list.append(account)
         for cc in bank.credit_cards:
             credit_cars_list.append(cc)
+        for investment in bank.investments:
+            investments_list.append(investment)
 
     # splash_pix = QPixmap("lib/loading_screen_bg.png")
     #

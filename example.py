@@ -39,10 +39,11 @@ class Transaction:
 
 
 class Investment:
-    def __init__(self, name, currency, type):
+    def __init__(self, name, currency, type, balance):
         self.name = name
         self.currency = currency
         self.type = type
+        self.balance = balance
 
 
 def create_example_banks():
@@ -63,8 +64,8 @@ def create_example_banks():
     credit_card_three = CreditCard("MasterCard", "XXXX-XXXX-3257", 1547.00, 365.00, "03/03")
     credit_card_four = CreditCard("Visa", "XXXX-XXXX-7541", 0.00, 0.00, "15/03")
 
-    investment_one = Investment("Bitcoin", "BTC", "Cryptocurrencies")
-    investment_two = Investment("Certificate of Deposit", "ARS", "Banking investments")
+    investment_one = Investment("Bitcoin", "BTC", "Cryptocurrencies", 5000.00)
+    investment_two = Investment("Certificate of Deposit", "ARS", "Banking investments", 365.00)
 
     bank_one = Bank("New Bank of Stormwind", [account_one, account_two, account_three],
                     [credit_card_one, credit_card_two], [investment_one])
