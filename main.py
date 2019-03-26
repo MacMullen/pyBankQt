@@ -77,10 +77,13 @@ class MainWindow(QMainWindow):
         transactions_title = QLabel("Latest Transactions")
         transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         transactions_layout.addWidget(transactions_title)
-        transactions_layout.addWidget(self.latest_transactions_box("40"))
-        transactions_layout.addWidget(self.latest_transactions_box("100"))
-        transactions_layout.addWidget(self.latest_transactions_box("1000"))
-        transactions_layout.addWidget(self.latest_transactions_box("20000"))
+        transactions_layout.addWidget(
+            self.latest_transactions_box("ACCOUNT TRANSFER", "BANK 2 INVESTMENTS", "10/10/19", 40.00))
+        transactions_layout.addWidget(self.latest_transactions_box("MARKET", "BANK 1 SAVINGS", "10/10/19", -800.00))
+        transactions_layout.addWidget(
+            self.latest_transactions_box("CREDIT CARD", "BANK 2 TRANSFER", "10/10/19", -120.00))
+        transactions_layout.addWidget(
+            self.latest_transactions_box("RANDOM BILL", "BANK 2 TRANSFER", "10/10/19", -1540.00))
         transactions_box.setLayout(transactions_layout)
         transactions_box.setStyleSheet("""
             QGroupBox {
@@ -101,10 +104,10 @@ class MainWindow(QMainWindow):
         balance_bills_title = QLabel("Bills")
         balance_bills_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         balance_bills_groupbox_layout.addWidget(balance_bills_title)
-        balance_bills_groupbox_layout.addWidget(self.bills_box())
-        balance_bills_groupbox_layout.addWidget(self.bills_box())
-        balance_bills_groupbox_layout.addWidget(self.bills_box())
-        balance_bills_groupbox_layout.addWidget(self.bills_box())
+        balance_bills_groupbox_layout.addWidget(self.bills_box("CAR INSURANCE", "20/05/19", 800.00))
+        balance_bills_groupbox_layout.addWidget(self.bills_box("HOSPITAL", "20/05/19", 800.00))
+        balance_bills_groupbox_layout.addWidget(self.bills_box("ELECTRICITY", "20/05/19", 800.00))
+        balance_bills_groupbox_layout.addWidget(self.bills_box("WATER", "20/05/19", 800.53))
         balance_bills_groupbox.setLayout(balance_bills_groupbox_layout)
         balance_bills_groupbox.setStyleSheet("""
             QGroupBox {
@@ -159,6 +162,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.base_layout)
         self.base_layout.setLayout(self.home_window)
 
+        # Property to make the window borderless
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+
         self.show()
 
     def hide_summary_data(self, item):
@@ -173,7 +179,7 @@ class MainWindow(QMainWindow):
         total_balance_box = QVBoxLayout()
         balance_label = QLabel("$120,587.56")
         balance_label.setStyleSheet(
-            "font-family: Roboto; font: 36pt; background: #282828; color: #1EB980; font-weight: bold;")
+            "font-family: Roboto; font: 36pt; background: #282828; color: white; font-weight: bold;")
         accounts_label = QLabel("Accounts")
         accounts_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         accounts_label.setMaximumHeight(14)
@@ -429,29 +435,29 @@ class MainWindow(QMainWindow):
         frame.setLayout(credit_card_box4)
         return frame
 
-    def bills_box(self):
+    def bills_box(self, bill_name: str, due_date: str, amount: int):
         account_box4 = QHBoxLayout()
 
-        account_name_label4 = QLabel("Market Buying")
+        account_name_label4 = QLabel(bill_name)
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
         account_name_label4_layout = QHBoxLayout()
         account_name_label4_layout.addWidget(account_name_label4)
 
-        account_number_label4 = QLabel("Due Date: 02/01/2019")
+        account_number_label4 = QLabel("Date: " + due_date)
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
 
-        account_balance_label4 = QLabel("800")
+        account_balance_label4 = QLabel(str(amount))
         account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: red;")
-        account_balance_label4.setMaximumWidth(100)
-        account_balance_label4.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        account_balance_label4.setMaximumWidth(75)
+        account_balance_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         account_balance_money_sign = QLabel("$")
         account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         account_balance_money_sign.setMaximumWidth(10)
         account_balance_label4_layout = QHBoxLayout()
-        account_balance_label4_layout.addWidget(account_balance_money_sign, 0)
-        account_balance_label4_layout.addWidget(account_balance_label4, 0)
+        account_balance_label4_layout.addWidget(account_balance_money_sign)
+        account_balance_label4_layout.addWidget(account_balance_label4)
 
         account_box4.addLayout(account_name_label4_layout)
         account_box4.addLayout(account_number_label4_layout)
@@ -461,35 +467,47 @@ class MainWindow(QMainWindow):
         frame.setObjectName("Frame")
         frame.setLayout(account_box4)
         frame.setStyleSheet("""
-                    QWidget#Frame {
-                       border-bottom: 1px solid #33333D;
-                       background: transparent;
-                       }""")
+            QWidget#Frame {
+               border-bottom: 1px solid #33333D;
+               background: transparent;
+               }""")
         return frame
 
-    def latest_transactions_box(self, var: str):
+    def latest_transactions_box(self, description: str, bank_account_name: str, date: str, amount: int):
         account_box4 = QHBoxLayout()
 
-        account_name_label4 = QLabel("Market Buying")
+        account_name_label4 = QLabel(description)
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_name_label4.setMinimumWidth(180)
+        account_bank_name_label4 = QLabel(bank_account_name)
+        account_bank_name_label4.setMaximumWidth(50)
+        account_bank_name_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_bank_name_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         account_name_label4_layout = QHBoxLayout()
         account_name_label4_layout.addWidget(account_name_label4)
+        account_name_label4_layout.addWidget(account_bank_name_label4)
 
-        account_number_label4 = QLabel("Date: 02/01/2019 02:43PM")
+        account_number_label4 = QLabel("Date: " + date)
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_number_label4.setAlignment(Qt.AlignCenter)
         account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
 
-        account_balance_label4 = QLabel(var)
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: red;")
-        account_balance_label4.setMaximumWidth(100)
-        account_balance_label4.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        account_balance_label4 = QLabel(str(amount))
+        if amount < 0:
+            account_balance_label4.setStyleSheet(
+                "font-family: Roboto; font: 12pt; background: #282828; color: #e53935;")
+        else:
+            account_balance_label4.setStyleSheet(
+                "font-family: Roboto; font: 12pt; background: #282828; color: #1EB980;")
+        account_balance_label4.setMaximumWidth(75)
+        account_balance_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         account_balance_money_sign = QLabel("$")
         account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         account_balance_money_sign.setMaximumWidth(10)
         account_balance_label4_layout = QHBoxLayout()
-        account_balance_label4_layout.addWidget(account_balance_money_sign, 0)
-        account_balance_label4_layout.addWidget(account_balance_label4, 0)
+        account_balance_label4_layout.addWidget(account_balance_money_sign)
+        account_balance_label4_layout.addWidget(account_balance_label4)
 
         account_box4.addLayout(account_name_label4_layout)
         account_box4.addLayout(account_number_label4_layout)
@@ -508,35 +526,46 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # splash_pix = QPixmap("lib/visa.png")
+    # splash_pix = QPixmap("lib/loading_screen_bg.png")
     #
     # splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
     # splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
     # splash.setEnabled(False)
     # splash = QSplashScreen(splash_pix)
+    #
+    # title = QLabel(splash)
+    # title.setText("PyBank")
+    # title.setGeometry(splash_pix.width() / 2, splash_pix.height() / 2, 100, 100)
+    # title.setStyleSheet("font-family: Roboto; font: 22pt; background: #282828; color: white; font-style: Thin;")
     # # adding progress bar
     # progressBar = QProgressBar(splash)
-    # progressBar.setStyleSheet("background-color:red;")
-    # progressBar.setMaximum(10)
-    # progressBar.setGeometry(0, splash_pix.height() - 50, splash_pix.width(), 20)
+    # progressBar.setMaximumWidth(620)
+    # progressBar.setStyleSheet("""QProgressBar {
+    #                                             border: 0px;
+    #                                             text-align: top;
+    #                                             padding: 2px;
+    #                                             background: #33333D;
+    #                                             width: 15px;
+    #                                             }
     #
-    # # splash.setMask(splash_pix.mask())
-    # frame = QFrame(splash)
-    # frame.setStyleSheet("background: black;")
-    # label = QLabel(splash)
-    # label.setText("HOLA")
-    # # frame.setGeometry(0, splash_pix.height() - 50, splash_pix.width(), 20)
+    #                                             QProgressBar::chunk {
+    #                                             padding: 5px;
+    #                                             background: #1EB980;
+    #                                             border: 0px;
+    # }""")
+    # progressBar.setMaximum(10)
+    # progressBar.setGeometry(10, splash_pix.height() - 50, splash_pix.width(), 20)
+    # progressBar.setTextVisible(False)
     # splash.show()
-    # splash.showMessage("<h1><font color='green'>Welcome BeeMan!</font></h1>", Qt.AlignTop | Qt.AlignCenter, Qt.black)
     #
     # for i in range(1, 11):
+    #     time.sleep(1)
     #     progressBar.setValue(i)
     #     t = time.time()
     #     while time.time() < t + 0.1:
     #         app.processEvents()
     #
     # # Simulate something that takes time
-    # time.sleep(1)
     # splash.hide()
     GUI = MainWindow()
     app.exec_()
