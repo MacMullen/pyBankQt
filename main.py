@@ -3,11 +3,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
 import time
+import example
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
 #  For test purposes
-bank_list = ["Bank 1", "Bank 1"]
+bank_list = []
+accounts_list = []
 
 
 def center(main_window: QMainWindow):
@@ -17,16 +19,19 @@ def center(main_window: QMainWindow):
     main_window.move(qr.topLeft())
 
 
+def sum_accounts_balance():
+    sum = 0
+    for account in accounts_list:
+        sum = sum + account.balance
+    return sum
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.resize(1280, 720)
         self.setWindowTitle("PyBank")
         self.setWindowIcon(QIcon('lib/ic_account_balance_2x.png'))
-        bank_list_dropdown = QComboBox()
-        bank_list_dropdown.move(800, 10)
-        bank_list_dropdown.setFixedSize(200, 30)
-        bank_list_dropdown.addItems(bank_list)
 
         self.total_balance_groupbox = QGroupBox("")
         self.total_balance_groupbox.setLayout(self.total_balance_box())
@@ -57,11 +62,6 @@ class MainWindow(QMainWindow):
                }""")
 
         self.home_window = QHBoxLayout()
-
-        select_bank_layout = QHBoxLayout()
-        select_bank_layout.addWidget(bank_list_dropdown)
-        select_bank_layout.setDirection(QBoxLayout.RightToLeft)
-        select_bank_layout.addStretch(1)
 
         total_balance_layout = QHBoxLayout()
         total_balance_layout.addWidget(self.total_balance_groupbox)
@@ -139,7 +139,6 @@ class MainWindow(QMainWindow):
         account_transactions_overview.addWidget(account_transactions_groupbox)
 
         account_data_layout = QVBoxLayout()
-        account_data_layout.addLayout(select_bank_layout)
         account_data_layout.addLayout(account_cc_overview)
         account_data_layout.addLayout(account_transactions_overview)
 
@@ -163,7 +162,7 @@ class MainWindow(QMainWindow):
         self.base_layout.setLayout(self.home_window)
 
         # Property to make the window borderless
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
 
         self.show()
 
@@ -177,7 +176,7 @@ class MainWindow(QMainWindow):
 
     def total_balance_box(self):
         total_balance_box = QVBoxLayout()
-        balance_label = QLabel("$120,587.56")
+        balance_label = QLabel("$" + str(sum_accounts_balance()))
         balance_label.setStyleSheet(
             "font-family: Roboto; font: 36pt; background: #282828; color: white; font-weight: bold;")
         accounts_label = QLabel("Accounts")
@@ -198,10 +197,12 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         total_balance_box.addLayout(color_layout)
-        total_balance_box.addWidget(self.account_box(money="30146.89", color="#005D57"))
-        total_balance_box.addWidget(self.account_box(money="0.00", color="#04B97F"))
-        total_balance_box.addWidget(self.account_box(money="301406.89", color="#37EFBA"))
-        total_balance_box.addWidget(self.account_box(money="60293.78", color="#37EFBA"))
+        for account in accounts_list:
+            total_balance_box.addWidget(self.account_box(account, color="white"))
+        # total_balance_box.addWidget(self.account_box(money="500", color="#005D57"))
+        # total_balance_box.addWidget(self.account_box(money="0.00", color="#04B97F"))
+        # total_balance_box.addWidget(self.account_box(money="301406.89", color="#37EFBA"))
+        # total_balance_box.addWidget(self.account_box(money="60293.78", color="#37EFBA"))
         return total_balance_box
 
     def investments_box(self):
@@ -288,44 +289,43 @@ class MainWindow(QMainWindow):
 
         return credit_card_box
 
-    def account_box(self, money, color):
-        account_box4 = QHBoxLayout()
+    def account_box(self, account: example.Account, color: str):
+        account_box_layout = QHBoxLayout()
 
-        accounts_name_box4 = QVBoxLayout()
-        account_name_label4 = QLabel("Bank 2 Savings")
-        account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        account_number_label4 = QLabel("xxxx-xxxx-xxxx-9658")
-        account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        accounts_name_box4.setContentsMargins(0, 0, 0, 0)
-        accounts_name_box4.addWidget(account_name_label4, 0, Qt.AlignBottom)
-        accounts_name_box4.addWidget(account_number_label4, 0, Qt.AlignTop)
+        account_name_layout = QHBoxLayout()
+        account_name_label = QLabel(account.name)
+        account_name_label.setMinimumWidth(100)
+        account_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_name_layout.addWidget(account_name_label)
 
-        account_balance_box4 = QHBoxLayout()
-        account_balance_label4 = QLabel(money)
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_box4.addWidget(account_balance_label4, Qt.AlignCenter)
-        account_balance_box4.addStretch(1)
+        account_number_layout = QHBoxLayout()
+        account_number_label = QLabel(account.number)
+        account_number_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_number_layout.addWidget(account_number_label)
 
-        account_balance_money_sign_layout = QHBoxLayout()
-        account_balance_money_sign = QLabel("$")
-        account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_money_sign_layout.addWidget(account_balance_money_sign, 0, Qt.AlignRight)
-        account_balance_money_sign_layout.setContentsMargins(0, 0, 50, 0)
+        account_balance_layout = QHBoxLayout()
+        account_balance_label = QLabel(str(account.balance))
+        account_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_balance_label.setMaximumWidth(75)
+        account_money_sign_label = QLabel("$")
+        account_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_money_sign_label.setMaximumWidth(10)
+        account_balance_layout.addWidget(account_money_sign_label)
+        account_balance_layout.addWidget(account_balance_label)
 
-        # account_box4.setContentsMargins(0, 0, 0, 0)
         color_strip = QFrame()
         color_strip.setStyleSheet(
             "background: {};".format(color))
         color_strip.setFixedWidth(2)
 
-        account_box4.addWidget(color_strip)
-        account_box4.addLayout(accounts_name_box4)
-        account_box4.addLayout(account_balance_money_sign_layout, Qt.AlignRight)
-        account_box4.addLayout(account_balance_box4, Qt.AlignLeft)
+        account_box_layout.addWidget(color_strip)
+        account_box_layout.addLayout(account_name_layout)
+        account_box_layout.addLayout(account_number_layout)
+        account_box_layout.addLayout(account_balance_layout, Qt.AlignRight)
 
         frame = QWidget()
         frame.setObjectName("Frame")
-        frame.setLayout(account_box4)
+        frame.setLayout(account_box_layout)
         frame.setStyleSheet("""
             QWidget#Frame {
                border-bottom: 1px solid #33333D;
@@ -526,6 +526,11 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    bank_list = example.create_example_banks()
+    for bank in bank_list:
+        for account in bank.accounts:
+            accounts_list.append(account)
+
     # splash_pix = QPixmap("lib/loading_screen_bg.png")
     #
     # splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
