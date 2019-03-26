@@ -43,6 +43,14 @@ def sum_cc_min_payment():
 
     return sum
 
+
+def sum_total_investments():
+    sum = 0
+    for investment in investments_list:
+        sum = sum + investment.balance
+
+    return sum
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -224,9 +232,9 @@ class MainWindow(QMainWindow):
 
     def investments_box(self):
         total_balance_box = QVBoxLayout()
-        balance_label = QLabel("$12,000.00")
+        balance_label = QLabel("$" + str(sum_total_investments()))
         balance_label.setStyleSheet(
-            "font-family: Roboto; font: 36pt; background: #282828; color: #B15DFF; font-weight: bold;")
+            "font-family: Roboto; font: 36pt; background: #282828; color: white; font-weight: bold;")
         accounts_label = QLabel("Investments")
         accounts_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         accounts_label.setMaximumHeight(14)
@@ -247,6 +255,9 @@ class MainWindow(QMainWindow):
         total_balance_box.addLayout(color_layout)
         for investment in investments_list:
             total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
+        if len(investments_list) < 4:
+            for i in range(0, 4 - len(investments_list)):
+                total_balance_box.addWidget(self.empty_investment_box())
         # total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
         # total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False, color="#72DEFF"))
         # total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True, color=None))
@@ -446,6 +457,53 @@ class MainWindow(QMainWindow):
         frame.setStyleSheet("""
                     QWidget#Frame {
                        border-bottom: 1px solid #33333D;
+                       background: transparent;
+                       }""")
+        return frame
+
+    def empty_investment_box(self):
+        investment_box_layout = QHBoxLayout()
+
+        investment_name_layout = QVBoxLayout()
+        investment_name_label = QLabel()
+        investment_name_label.setMinimumWidth(100)
+        investment_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        investment_currency_label = QLabel()
+        investment_currency_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        investment_name_layout.addWidget(investment_name_label)
+        investment_name_layout.addWidget(investment_currency_label)
+
+        investment_type_layout = QHBoxLayout()
+        investment_type_label = QLabel()
+        investment_type_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        investment_type_layout.addWidget(investment_type_label)
+
+        investment_balance_layout = QHBoxLayout()
+        investment_balance_label = QLabel()
+        investment_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        investment_balance_label.setMaximumWidth(75)
+        investment_money_sign_label = QLabel()
+        investment_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        investment_money_sign_label.setMaximumWidth(10)
+        investment_balance_layout.addWidget(investment_money_sign_label)
+        investment_balance_layout.addWidget(investment_balance_label)
+
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: {};".format("#282828"))
+        color_strip.setFixedWidth(2)
+
+        investment_box_layout.addWidget(color_strip)
+        investment_box_layout.addLayout(investment_name_layout)
+        investment_box_layout.addLayout(investment_type_layout)
+        investment_box_layout.addLayout(investment_balance_layout, Qt.AlignRight)
+
+        frame = QWidget()
+        frame.setObjectName("Frame")
+        frame.setLayout(investment_box_layout)
+        frame.setStyleSheet("""
+                    QWidget#Frame {
+                       border-bottom: 1px solid #282828;
                        background: transparent;
                        }""")
         return frame
