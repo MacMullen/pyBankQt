@@ -10,6 +10,7 @@ import example
 #  For test purposes
 bank_list = []
 accounts_list = []
+credit_cars_list = []
 
 
 def center(main_window: QMainWindow):
@@ -25,6 +26,21 @@ def sum_accounts_balance():
         sum = sum + account.balance
     return sum
 
+
+def sum_cc_max_payment():
+    sum = 0
+    for cc in credit_cars_list:
+        sum = sum + cc.max_payment
+
+    return sum
+
+
+def sum_cc_min_payment():
+    sum = 0
+    for cc in credit_cars_list:
+        sum = sum + cc.min_payment
+
+    return sum
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -238,25 +254,29 @@ class MainWindow(QMainWindow):
         credit_card_box = QVBoxLayout()
 
         payment_box = QHBoxLayout()
+
         credit_card_label_total = QLabel("Current balance")
         credit_card_label_total.setStyleSheet(
             "font-family: Roboto; font: 10pt; background: #282828; color: white; font-weight: bold;")
-        credit_card_total = QLabel("$587.56")
+        credit_card_total = QLabel("$" + str(sum_cc_max_payment()))
         credit_card_total.setStyleSheet(
-            "font-family: Roboto; font: 24pt; background: #282828; color: #ef6c00; font-weight: bold;")
+            "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
+        credit_card_total.setMinimumWidth(225)
         credit_card_total_layout = QVBoxLayout()
         credit_card_total_layout.addWidget(credit_card_label_total)
         credit_card_total_layout.addWidget(credit_card_total)
-        credit_card_min_payment_title = QLabel("Minimum Payment       ")
+
+        credit_card_min_payment_title = QLabel("Minimum Payment")
         credit_card_min_payment_title.setStyleSheet(
             "font-family: Roboto; font: 10pt; background: #282828; color: white; font-weight: bold;")
-        credit_card_min_payment_value = QLabel("$250.58 ")
+        credit_card_min_payment_value = QLabel("$" + str(sum_cc_min_payment()))
         credit_card_min_payment_value.setStyleSheet(
-            "font-family: Roboto; font: 24pt; background: #282828; color: #ffac12; font-weight: bold;")
+            "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
         credit_card_min_payment_layout = QVBoxLayout()
-        credit_card_min_payment_layout.addWidget(credit_card_min_payment_title, 0, Qt.AlignRight)
-        credit_card_min_payment_layout.addWidget(credit_card_min_payment_value, 0, Qt.AlignRight)
+        credit_card_min_payment_layout.addWidget(credit_card_min_payment_title)
+        credit_card_min_payment_layout.addWidget(credit_card_min_payment_value)
         credit_card_total.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
         accounts_label = QLabel("Credit Cards")
         accounts_label.setStyleSheet(
             "background-color: white; font-family: Roboto; font: 12pt; background: #282828; color: white;")
@@ -282,10 +302,12 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         credit_card_box.addLayout(color_layout)
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#FFDC78"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#d85f4e"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#ffac12"))
-        credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#ffac12"))
+        for cc in credit_cars_list:
+            credit_card_box.addWidget(self.credit_card_balance(cc, color="white"))
+        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#FFDC78"))
+        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#d85f4e"))
+        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#ffac12"))
+        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#ffac12"))
 
         return credit_card_box
 
@@ -395,25 +417,30 @@ class MainWindow(QMainWindow):
                    }""")
         return frame
 
-    def credit_card_balance(self, cc_type, color):
+    def credit_card_balance(self, cc: example.CreditCard, color):
         credit_card_box4 = QHBoxLayout()
 
         credit_cards_name_box4 = QVBoxLayout()
-        credit_card_name_label4 = QLabel(cc_type)
+        credit_card_name_label4 = QLabel(cc.cc_type)
         credit_card_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_number_label4 = QLabel("xxxx-xxxx-xxxx-9658")
+        credit_card_number_label4 = QLabel(cc.card_number)
         credit_card_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         credit_cards_name_box4.setContentsMargins(0, 0, 0, 0)
         credit_cards_name_box4.addWidget(credit_card_name_label4, 0, Qt.AlignBottom)
         credit_cards_name_box4.addWidget(credit_card_number_label4, 0, Qt.AlignTop)
 
         credit_card_balance_box4 = QHBoxLayout()
-        credit_card_balance_label4 = QLabel("Min: $0.00 Total: $0.00")
-        credit_card_balance_label4.setStyleSheet(
+        credit_card_min_payment_label = QLabel("Min: $" + str(cc.min_payment))
+        credit_card_max_payment_label = QLabel("Total: $" + str(cc.max_payment))
+        credit_card_min_payment_label.setStyleSheet(
             "font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_balance_box4.addWidget(credit_card_balance_label4, 0, Qt.AlignCenter)
+        credit_card_max_payment_label.setStyleSheet(
+            "font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        credit_card_min_payment_label.setMinimumWidth(100)
+        credit_card_max_payment_label.setMinimumWidth(100)
+        credit_card_balance_box4.addWidget(credit_card_min_payment_label)
+        credit_card_balance_box4.addWidget(credit_card_max_payment_label)
         credit_card_balance_box4.setDirection(QBoxLayout.RightToLeft)
-        credit_card_balance_box4.setContentsMargins(0, 0, 0, 0)
         credit_card_balance_box4.addStretch(1)
 
         color_strip = QFrame()
@@ -530,6 +557,8 @@ if __name__ == "__main__":
     for bank in bank_list:
         for account in bank.accounts:
             accounts_list.append(account)
+        for cc in bank.credit_cards:
+            credit_cars_list.append(cc)
 
     # splash_pix = QPixmap("lib/loading_screen_bg.png")
     #
