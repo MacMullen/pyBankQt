@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon('lib/ic_account_balance_2x.png'))
 
         self.total_balance_groupbox = QGroupBox("")
-        self.total_balance_groupbox.setLayout(self.total_balance_box())
+        self.total_balance_groupbox.setLayout(self.accounts_groupbox())
         self.total_balance_groupbox.setStyleSheet("""
             QGroupBox {
                border: 0px;
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
                }""")
 
         total_balance_groupbox2 = QGroupBox("")
-        total_balance_groupbox2.setLayout(self.credit_card_box())
+        total_balance_groupbox2.setLayout(self.credit_card_groupbox())
         total_balance_groupbox2.setStyleSheet("""
             QGroupBox {
                border: 0px;
@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         self.total_balance_layout_box3 = QVBoxLayout()
         latest_transactions_title = QLabel("Investments")
         latest_transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        self.total_balance_layout_box3.addLayout(self.investments_box())
+        self.total_balance_layout_box3.addLayout(self.investments_groupbox())
         self.total_balance_groupbox3.setLayout(self.total_balance_layout_box3)
         self.total_balance_groupbox3.setStyleSheet("""
             QGroupBox {
@@ -193,62 +193,53 @@ class MainWindow(QMainWindow):
             self.overview_data_widget.hide()
             self.account_data_widget.show()
 
-    def total_balance_box(self):
-        total_balance_box = QVBoxLayout()
+    def accounts_groupbox(self):
+        accounts_groupbox_layout = QVBoxLayout()
         balance_label = QLabel("$" + str(sum_accounts_balance()))
         balance_label.setStyleSheet(
             "font-family: Roboto; font: 36pt; background: #282828; color: white; font-weight: bold;")
         accounts_label = QLabel("Accounts")
         accounts_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         accounts_label.setMaximumHeight(14)
-        total_balance_box.addWidget(accounts_label)
-        total_balance_box.addItem(QSpacerItem(50, 15))
-        total_balance_box.addWidget(balance_label)
-        total_balance_box.addItem(QSpacerItem(50, 20))
+        accounts_groupbox_layout.addWidget(accounts_label)
+        accounts_groupbox_layout.addItem(QSpacerItem(50, 15))
+        accounts_groupbox_layout.addWidget(balance_label)
+        accounts_groupbox_layout.addItem(QSpacerItem(50, 20))
 
-        # Calculate percetanges:
+        # Calculate percentages:
         percentages = []
         for acc in accounts_list:
             percentages.append(round((acc.balance * 100 / sum_accounts_balance()) / 100, 2))
-        print(percentages[0], percentages[0] + 0.001, percentages[1], percentages[1] + 0.001, percentages[2],
-              percentages[2] + 0.0001, percentages[3])
-
-        color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #006159, stop:{} #006159, stop:{} #008654, stop:{} #008654, stop:{} #00C582, stop:{} #00C582, stop:{} #00FEBC, stop:1 #00FEBC);".format(
-                percentages[0], percentages[0] + 0.0001, percentages[0] + percentages[1],
-                                percentages[0] + percentages[1] + 0.0001,
-                                percentages[0] + percentages[1] + percentages[2],
-                                percentages[0] + percentages[1] + percentages[2] + 0.0001))
-        color_strip.setFixedHeight(2)
 
         color_layout = QHBoxLayout()
         color_layout.setContentsMargins(0, 0, 0, 0)
-        color_layout.addWidget(color_strip)
+        color_layout.addWidget(
+            self.groupbox_color_strip(colors=["#006159", "#008654", "#00C582", "#00FEBC"], amount=len(accounts_list),
+                                      percent=percentages))
 
-        total_balance_box.addLayout(color_layout)
+        accounts_groupbox_layout.addLayout(color_layout)
         if len(accounts_list) < 4:
             for i in range(0, len(accounts_list)):
-                total_balance_box.addWidget(self.account_box(accounts_list[i], color=i))
+                accounts_groupbox_layout.addWidget(self.account_box(accounts_list[i], color=i))
             for i in range(0, 4 - len(accounts_list)):
-                total_balance_box.addWidget(self.account_box_empty())
+                accounts_groupbox_layout.addWidget(self.account_box_empty())
         else:
             for i in range(0, 4):
-                total_balance_box.addWidget(self.account_box(accounts_list[i], color=i))
-        return total_balance_box
+                accounts_groupbox_layout.addWidget(self.account_box(accounts_list[i], color=i))
+        return accounts_groupbox_layout
 
-    def investments_box(self):
-        total_balance_box = QVBoxLayout()
+    def investments_groupbox(self):
+        investments_groupbox_layout = QVBoxLayout()
         balance_label = QLabel("$" + str(sum_total_investments()))
         balance_label.setStyleSheet(
             "font-family: Roboto; font: 36pt; background: #282828; color: white; font-weight: bold;")
-        accounts_label = QLabel("Investments")
-        accounts_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        accounts_label.setMaximumHeight(14)
-        total_balance_box.addWidget(accounts_label)
-        total_balance_box.addItem(QSpacerItem(50, 15))
-        total_balance_box.addWidget(balance_label)
-        total_balance_box.addItem(QSpacerItem(50, 20))
+        investments_label = QLabel("Investments")
+        investments_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        investments_label.setMaximumHeight(14)
+        investments_groupbox_layout.addWidget(investments_label)
+        investments_groupbox_layout.addItem(QSpacerItem(50, 15))
+        investments_groupbox_layout.addWidget(balance_label)
+        investments_groupbox_layout.addItem(QSpacerItem(50, 20))
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
@@ -259,44 +250,39 @@ class MainWindow(QMainWindow):
         color_layout.setContentsMargins(0, 0, 0, 0)
         color_layout.addWidget(color_strip)
 
-        total_balance_box.addLayout(color_layout)
+        investments_groupbox_layout.addLayout(color_layout)
         for investment in investments_list:
-            total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
+            investments_groupbox_layout.addWidget(self.investment_box(investment, color="#B15DFF"))
         if len(investments_list) < 4:
             for i in range(0, 4 - len(investments_list)):
-                total_balance_box.addWidget(self.empty_investment_box())
-        # total_balance_box.addWidget(self.investment_box(investment, color="#B15DFF"))
-        # total_balance_box.addWidget(self.investment_box(money="2000.00", empty=False, color="#72DEFF"))
-        # total_balance_box.addWidget(self.investment_box(money="30146.89", empty=True, color=None))
-        # total_balance_box.addWidget(self.investment_box(money="60293.78", empty=True, color=None))
-        return total_balance_box
+                investments_groupbox_layout.addWidget(self.empty_investment_box())
+        return investments_groupbox_layout
 
-    def credit_card_box(self):
-        credit_card_box = QVBoxLayout()
+    def credit_card_groupbox(self):
+        credit_card_groupbox_layout = QVBoxLayout()
 
         payment_box = QHBoxLayout()
 
-        credit_card_label_total = QLabel("Current balance")
-        credit_card_label_total.setStyleSheet(
+        credit_card_balance_title_label = QLabel("Current balance")
+        credit_card_balance_title_label.setStyleSheet(
             "font-family: Roboto; font: 10pt; background: #282828; color: white; font-weight: bold;")
-        credit_card_total = QLabel("$" + str(sum_cc_max_payment()))
-        credit_card_total.setStyleSheet(
+        credit_card_total_balance_label = QLabel("$" + str(sum_cc_max_payment()))
+        credit_card_total_balance_label.setStyleSheet(
             "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
-        credit_card_total.setMinimumWidth(225)
+        credit_card_total_balance_label.setMinimumWidth(225)
         credit_card_total_layout = QVBoxLayout()
-        credit_card_total_layout.addWidget(credit_card_label_total)
-        credit_card_total_layout.addWidget(credit_card_total)
+        credit_card_total_layout.addWidget(credit_card_balance_title_label)
+        credit_card_total_layout.addWidget(credit_card_total_balance_label)
 
-        credit_card_min_payment_title = QLabel("Minimum Payment")
-        credit_card_min_payment_title.setStyleSheet(
+        credit_card_min_payment_title_label = QLabel("Minimum Payment")
+        credit_card_min_payment_title_label.setStyleSheet(
             "font-family: Roboto; font: 10pt; background: #282828; color: white; font-weight: bold;")
-        credit_card_min_payment_value = QLabel("$" + str(sum_cc_min_payment()))
-        credit_card_min_payment_value.setStyleSheet(
+        credit_card_min_payment_label = QLabel("$" + str(sum_cc_min_payment()))
+        credit_card_min_payment_label.setStyleSheet(
             "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
         credit_card_min_payment_layout = QVBoxLayout()
-        credit_card_min_payment_layout.addWidget(credit_card_min_payment_title)
-        credit_card_min_payment_layout.addWidget(credit_card_min_payment_value)
-        credit_card_total.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        credit_card_min_payment_layout.addWidget(credit_card_min_payment_title_label)
+        credit_card_min_payment_layout.addWidget(credit_card_min_payment_label)
 
         accounts_label = QLabel("Credit Cards")
         accounts_label.setStyleSheet(
@@ -310,8 +296,8 @@ class MainWindow(QMainWindow):
         payment_box_title.addItem(QSpacerItem(50, 5))
         payment_box_title.addLayout(payment_box)
 
-        credit_card_box.addLayout(payment_box_title)
-        credit_card_box.addItem(QSpacerItem(50, 24))
+        credit_card_groupbox_layout.addLayout(payment_box_title)
+        credit_card_groupbox_layout.addItem(QSpacerItem(50, 24))
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
@@ -322,15 +308,11 @@ class MainWindow(QMainWindow):
         color_layout.setContentsMargins(0, 0, 0, 0)
         color_layout.addWidget(color_strip)
 
-        credit_card_box.addLayout(color_layout)
+        credit_card_groupbox_layout.addLayout(color_layout)
         for cc in credit_cars_list:
-            credit_card_box.addWidget(self.cc_box(cc, color="white"))
-        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#FFDC78"))
-        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#d85f4e"))
-        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Visa", color="#ffac12"))
-        # credit_card_box.addWidget(self.credit_card_balance(cc_type="Mastercard", color="#ffac12"))
+            credit_card_groupbox_layout.addWidget(self.credit_card_box(cc, color="white"))
 
-        return credit_card_box
+        return credit_card_groupbox_layout
 
     def account_box(self, account: example.Account, color: int):
         account_box_layout = QHBoxLayout()
@@ -382,7 +364,50 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def cc_box(self, cc: example.CreditCard, color):
+    def account_box_empty(self):
+        account_box_layout = QHBoxLayout()
+
+        account_name_layout = QHBoxLayout()
+        account_name_label = QLabel()
+        account_name_label.setMinimumWidth(100)
+        account_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        account_name_layout.addWidget(account_name_label)
+
+        account_number_layout = QHBoxLayout()
+        account_number_label = QLabel()
+        account_number_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        account_number_layout.addWidget(account_number_label)
+
+        account_balance_layout = QHBoxLayout()
+        account_balance_label = QLabel()
+        account_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_balance_label.setMaximumWidth(75)
+        account_money_sign_label = QLabel()
+        account_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        account_money_sign_label.setMaximumWidth(10)
+        account_balance_layout.addWidget(account_money_sign_label)
+        account_balance_layout.addWidget(account_balance_label)
+
+        color_strip = QFrame()
+        color_strip.setStyleSheet("background: #282828;")
+        color_strip.setFixedWidth(2)
+
+        account_box_layout.addWidget(color_strip)
+        account_box_layout.addLayout(account_name_layout)
+        account_box_layout.addLayout(account_number_layout)
+        account_box_layout.addLayout(account_balance_layout, Qt.AlignRight)
+
+        frame = QWidget()
+        frame.setObjectName("Frame")
+        frame.setLayout(account_box_layout)
+        frame.setStyleSheet("""
+            QWidget#Frame {
+               border-bottom: 1px solid #282828;
+               background: transparent;
+               }""")
+        return frame
+
+    def credit_card_box(self, cc: example.CreditCard, color):
         cc_box_layout = QHBoxLayout()
 
         cc_name_layout = QVBoxLayout()
@@ -610,6 +635,35 @@ class MainWindow(QMainWindow):
                background: transparent;
                }""")
         return frame
+
+    def groupbox_color_strip(self, colors, amount, percent):
+        color_strip = QFrame()
+        if amount >= 4:
+            color_strip.setStyleSheet(
+                "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:1 {});".format(
+                    colors[0], percent[0], colors[0], percent[0] + 0.0001, colors[1], percent[0] + percent[1],
+                    colors[1],
+                                                      percent[0] + percent[1] + 0.0001, colors[2],
+                                                      percent[0] + percent[1] + percent[2], colors[2],
+                                                      percent[0] + percent[1] + percent[2] + 0.0001, colors[3],
+                    colors[3]))
+        if amount == 3:
+            color_strip.setStyleSheet(
+                "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:4 {});".format(
+                    colors[0], percent[0], colors[0], percent[0] + 0.0001, colors[1], percent[0] + percent[1],
+                    colors[1],
+                                                      percent[0] + percent[1] + 0.0001, colors[2], colors[2]))
+        if amount == 2:
+            color_strip.setStyleSheet(
+                "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 {}, stop:{} {}, stop:{} {}, stop:1 {});".format(
+                    colors[0], percent[0], colors[0], percent[0] + 0.0001, colors[1], colors[1]))
+        if amount == 1:
+            color_strip.setStyleSheet(
+                "background: {};".format(colors[0]))
+        if amount == 0:
+            color_strip.setStyleSheet("background: #202020;")
+        color_strip.setFixedHeight(2)
+        return color_strip
 
 
 if __name__ == "__main__":
