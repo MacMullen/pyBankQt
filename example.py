@@ -1,3 +1,5 @@
+import jsonpickle
+
 class Bank:
     def __init__(self, name, accounts, credit_cards, investments):
         self.name = name

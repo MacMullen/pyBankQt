@@ -7,7 +7,6 @@ import example
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
-#  For test purposes
 bank_list = []
 accounts_list = []
 credit_cars_list = []
@@ -32,7 +31,6 @@ def sum_cc_max_payment():
     sum = 0
     for cc in credit_cars_list:
         sum = sum + cc.max_payment
-
     return sum
 
 
@@ -40,7 +38,6 @@ def sum_cc_min_payment():
     sum = 0
     for cc in credit_cars_list:
         sum = sum + cc.min_payment
-
     return sum
 
 
@@ -48,8 +45,8 @@ def sum_total_investments():
     sum = 0
     for investment in investments_list:
         sum = sum + investment.balance
-
     return sum
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -167,16 +164,12 @@ class MainWindow(QMainWindow):
         account_data_layout.addLayout(account_cc_overview)
         account_data_layout.addLayout(account_transactions_overview)
 
-        self.account_data_widget = QWidget()
-        self.account_data_widget.setLayout(account_data_layout)
-        self.account_data_widget.hide()
-
         self.overview_data_widget.setLayout(bank_data_layout)
 
         main_menu_layout = QVBoxLayout()
         self.home_window.addLayout(main_menu_layout)
         self.home_window.addWidget(self.overview_data_widget)
-        self.home_window.addWidget(self.account_data_widget)
+        # self.home_window.addWidget(self.account_data_widget) How to add several views
 
         self.base_layout = QWidget()
         self.base_layout.setStyleSheet("""
@@ -212,9 +205,16 @@ class MainWindow(QMainWindow):
         total_balance_box.addWidget(balance_label)
         total_balance_box.addItem(QSpacerItem(50, 20))
 
+        # Calculate percetanges:
+        percentages = []
+        for acc in accounts_list:
+            percentages.append(round((acc.balance * 100 / sum_accounts_balance()) / 100, 2))
+
         color_strip = QFrame()
         color_strip.setStyleSheet(
-            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #1cd19a, stop:0.3 #1cd19a, stop:0.3001 #287e6a, stop:0.6 #287e6a, stop:0.6001 #16534a, stop:1 #16534a);")
+            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #006159, stop:{} #006159, stop:{} #008654, stop:{} #008654, stop:{} #00C582, stop:{} #00C582, stop:{} #00FEBC, stop:1 #00FEBC );".format(
+                percentages[0], percentages[0] + 0.001, percentages[1], percentages[1] + 0.001, percentages[2],
+                                percentages[2] + 0.001, percentages[3]))
         color_strip.setFixedHeight(2)
 
         color_layout = QHBoxLayout()
@@ -222,12 +222,14 @@ class MainWindow(QMainWindow):
         color_layout.addWidget(color_strip)
 
         total_balance_box.addLayout(color_layout)
-        for account in accounts_list:
-            total_balance_box.addWidget(self.account_box(account, color="white"))
-        # total_balance_box.addWidget(self.account_box(money="500", color="#005D57"))
-        # total_balance_box.addWidget(self.account_box(money="0.00", color="#04B97F"))
-        # total_balance_box.addWidget(self.account_box(money="301406.89", color="#37EFBA"))
-        # total_balance_box.addWidget(self.account_box(money="60293.78", color="#37EFBA"))
+        if len(accounts_list) < 4:
+            for i in range(0, len(accounts_list)):
+                total_balance_box.addWidget(self.account_box(accounts_list[i], color=i))
+            for i in range(0, 4 - len(accounts_list)):
+                total_balance_box.addWidget(self.account_box_empty())
+        else:
+            for i in range(0, 4):
+                total_balance_box.addWidget(self.account_box(accounts_list[i], color=i))
         return total_balance_box
 
     def investments_box(self):
@@ -325,7 +327,7 @@ class MainWindow(QMainWindow):
 
         return credit_card_box
 
-    def account_box(self, account: example.Account, color: str):
+    def account_box(self, account: example.Account, color: int):
         account_box_layout = QHBoxLayout()
 
         account_name_layout = QHBoxLayout()
@@ -350,8 +352,14 @@ class MainWindow(QMainWindow):
         account_balance_layout.addWidget(account_balance_label)
 
         color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: {};".format(color))
+        if color == 0:
+            color_strip.setStyleSheet("background: #006159;")
+        if color == 1:
+            color_strip.setStyleSheet("background: #008654;")
+        if color == 2:
+            color_strip.setStyleSheet("background: #00C582;")
+        if color == 3:
+            color_strip.setStyleSheet("background: #00FEBC;")
         color_strip.setFixedWidth(2)
 
         account_box_layout.addWidget(color_strip)
