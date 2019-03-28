@@ -215,9 +215,11 @@ class MainWindow(QMainWindow):
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
-            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #006159, stop:{} #006159, stop:{} #008654, stop:{} #008654, stop:{} #00C582, stop:{} #00C582, stop:{} #00FEBC, stop:1 #00FEBC );".format(
-                percentages[0], percentages[0] + 0.0001, percentages[1], percentages[1] + 0.0001, percentages[2],
-                                percentages[2] + 0.0001, percentages[3]))
+            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #006159, stop:{} #006159, stop:{} #008654, stop:{} #008654, stop:{} #00C582, stop:{} #00C582, stop:{} #00FEBC, stop:1 #00FEBC);".format(
+                percentages[0], percentages[0] + 0.0001, percentages[0] + percentages[1],
+                                percentages[0] + percentages[1] + 0.0001,
+                                percentages[0] + percentages[1] + percentages[2],
+                                percentages[0] + percentages[1] + percentages[2] + 0.0001))
         color_strip.setFixedHeight(2)
 
         color_layout = QHBoxLayout()
