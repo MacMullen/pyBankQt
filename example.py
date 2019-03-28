@@ -18,11 +18,12 @@ class Account:
 
 
 class CreditCard:
-    def __init__(self, cc_type, card_number, max_payment, min_payment, due_date):
+    def __init__(self, cc_type, card_number, max_payment, min_payment, due_date, close_date):
         self.cc_type = cc_type
         self.card_number = card_number
         self.max_payment = max_payment
         self.min_payment = min_payment
+        self.close_date = close_date
         self.due_date = due_date
 
 
@@ -61,10 +62,10 @@ def create_example_banks():
     account_three = Account("Pension", "ARS", 3200.00, transactions_account_two, "XXXXXXXX6999")
     account_four = Account("Pension Savings", "ARS", 632.24, [], "XXXXXXXX6987")
 
-    credit_card_one = CreditCard("Visa", "XXXX-XXXX-5874", 625.00, 210.00, "20/03")
-    credit_card_two = CreditCard("MasterCard", "XXXX-XXXX-9857", 63.00, 3.00, "02/04")
-    credit_card_three = CreditCard("MasterCard", "XXXX-XXXX-3257", 1547.00, 365.00, "03/03")
-    credit_card_four = CreditCard("Visa", "XXXX-XXXX-7541", 0.00, 0.00, "15/03")
+    credit_card_one = CreditCard("Visa", "XXXX-XXXX-5874", 625.00, 210.00, "20/03", "05/04")
+    credit_card_two = CreditCard("MasterCard", "XXXX-XXXX-9857", 63.00, 3.00, "02/04", "15/04")
+    credit_card_three = CreditCard("MasterCard", "XXXX-XXXX-3257", 1547.00, 365.00, "03/03", "15/03")
+    credit_card_four = CreditCard("Visa", "XXXX-XXXX-7541", 0.00, 0.00, "15/03", "30/03")
 
     investment_one = Investment("Bitcoin", "BTC", "Cryptocurrencies", 5000.00)
     investment_two = Investment("Certificate of Deposit", "ARS", "Banking investments", 365.00)

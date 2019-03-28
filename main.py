@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
 import time
+import operator
 import example
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
@@ -209,12 +210,14 @@ class MainWindow(QMainWindow):
         percentages = []
         for acc in accounts_list:
             percentages.append(round((acc.balance * 100 / sum_accounts_balance()) / 100, 2))
+        print(percentages[0], percentages[0] + 0.001, percentages[1], percentages[1] + 0.001, percentages[2],
+              percentages[2] + 0.0001, percentages[3])
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
             "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #006159, stop:{} #006159, stop:{} #008654, stop:{} #008654, stop:{} #00C582, stop:{} #00C582, stop:{} #00FEBC, stop:1 #00FEBC );".format(
-                percentages[0], percentages[0] + 0.001, percentages[1], percentages[1] + 0.001, percentages[2],
-                                percentages[2] + 0.001, percentages[3]))
+                percentages[0], percentages[0] + 0.0001, percentages[1], percentages[1] + 0.0001, percentages[2],
+                                percentages[2] + 0.0001, percentages[3]))
         color_strip.setFixedHeight(2)
 
         color_layout = QHBoxLayout()
@@ -378,48 +381,50 @@ class MainWindow(QMainWindow):
         return frame
 
     def cc_box(self, cc: example.CreditCard, color):
-        credit_card_box_layout = QHBoxLayout()
+        cc_box_layout = QHBoxLayout()
 
-        credit_card_name_layout = QVBoxLayout()
-        credit_card_type_label = QLabel(cc.cc_type)
-        credit_card_type_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_number_label = QLabel(cc.card_number)
-        credit_card_number_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        credit_card_name_layout.setContentsMargins(0, 0, 0, 0)
-        credit_card_name_layout.addWidget(credit_card_type_label, 0, Qt.AlignBottom)
-        credit_card_name_layout.addWidget(credit_card_number_label, 0, Qt.AlignTop)
+        cc_name_layout = QVBoxLayout()
+        cc_name_label = QLabel(cc.cc_type)
+        cc_name_label.setMinimumWidth(100)
+        cc_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        cc_currency_label = QLabel(cc.card_number)
+        cc_currency_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        cc_name_layout.addWidget(cc_name_label)
+        cc_name_layout.addWidget(cc_currency_label)
 
-        credit_card_balance_layout = QHBoxLayout()
-        credit_card_min_payment_label = QLabel("Min: $" + str(cc.min_payment))
-        credit_card_max_payment_label = QLabel("Total: $" + str(cc.max_payment))
-        credit_card_min_payment_label.setStyleSheet(
-            "font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_max_payment_label.setStyleSheet(
-            "font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        credit_card_min_payment_label.setMinimumWidth(100)
-        credit_card_max_payment_label.setMinimumWidth(100)
-        credit_card_balance_layout.addWidget(credit_card_min_payment_label)
-        credit_card_balance_layout.addWidget(credit_card_max_payment_label)
-        credit_card_balance_layout.setDirection(QBoxLayout.RightToLeft)
-        credit_card_balance_layout.addStretch(1)
+        cc_due_date_layout = QHBoxLayout()
+        cc_due_date_label = QLabel("Due date: " + cc.due_date)
+        cc_due_date_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        cc_due_date_layout.addWidget(cc_due_date_label)
+
+        cc_balance_layout = QHBoxLayout()
+        cc_balance_label = QLabel(str(cc.max_payment))
+        cc_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        cc_balance_label.setMaximumWidth(75)
+        cc_money_sign_label = QLabel("$")
+        cc_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        cc_money_sign_label.setMaximumWidth(10)
+        cc_balance_layout.addWidget(cc_money_sign_label)
+        cc_balance_layout.addWidget(cc_balance_label)
 
         color_strip = QFrame()
         color_strip.setStyleSheet(
             "background: {};".format(color))
         color_strip.setFixedWidth(2)
 
-        credit_card_box_layout.addWidget(color_strip)
-        credit_card_box_layout.addLayout(credit_card_name_layout)
-        credit_card_box_layout.addLayout(credit_card_balance_layout)
+        cc_box_layout.addWidget(color_strip)
+        cc_box_layout.addLayout(cc_name_layout)
+        cc_box_layout.addLayout(cc_due_date_layout)
+        cc_box_layout.addLayout(cc_balance_layout, Qt.AlignRight)
 
         frame = QWidget()
         frame.setObjectName("Frame")
+        frame.setLayout(cc_box_layout)
         frame.setStyleSheet("""
-            QWidget#Frame {
-               border-bottom: 1px solid #33333D;
-               background: transparent;
-               }""")
-        frame.setLayout(credit_card_box_layout)
+                           QWidget#Frame {
+                              border-bottom: 1px solid #33333D;
+                              background: transparent;
+                              }""")
         return frame
 
     def investment_box(self, investment: example.Investment, color):
@@ -615,6 +620,9 @@ if __name__ == "__main__":
             credit_cars_list.append(cc)
         for investment in bank.investments:
             investments_list.append(investment)
+
+    accounts_list.sort(key=operator.attrgetter("balance"), reverse=True)
+    credit_cars_list.sort(key=operator.attrgetter("due_date"))
 
     # splash_pix = QPixmap("lib/loading_screen_bg.png")
     #
