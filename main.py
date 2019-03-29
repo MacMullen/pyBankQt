@@ -2,7 +2,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
-import time
+import os, os.path
+import pickle
 import operator
 import example
 
@@ -10,7 +11,7 @@ import example
 
 bank_list = []
 accounts_list = []
-credit_cars_list = []
+credit_cards_list = []
 investments_list = []
 
 
@@ -30,14 +31,14 @@ def sum_accounts_balance():
 
 def sum_cc_max_payment():
     sum = 0
-    for cc in credit_cars_list:
+    for cc in credit_cards_list:
         sum = sum + cc.max_payment
     return sum
 
 
 def sum_cc_min_payment():
     sum = 0
-    for cc in credit_cars_list:
+    for cc in credit_cards_list:
         sum = sum + cc.min_payment
     return sum
 
@@ -209,7 +210,10 @@ class MainWindow(QMainWindow):
         # Calculate percentages:
         percentages = []
         for acc in accounts_list:
-            percentages.append(round((acc.balance * 100 / sum_accounts_balance()) / 100, 2))
+            percent = round((acc.balance * 100 / sum_accounts_balance()) / 100, 2)
+            if percent == 0:
+                percent = 0.001
+            percentages.append(percent)
 
         color_layout = QHBoxLayout()
         color_layout.setContentsMargins(0, 0, 0, 0)
@@ -218,14 +222,13 @@ class MainWindow(QMainWindow):
                                       percent=percentages))
 
         accounts_groupbox_layout.addLayout(color_layout)
+
+        for i in range(0, len(accounts_list)):
+            accounts_groupbox_layout.addWidget(self.account_box(accounts_list[i], color=i))
         if len(accounts_list) < 4:
-            for i in range(0, len(accounts_list)):
-                accounts_groupbox_layout.addWidget(self.account_box(accounts_list[i], color=i))
             for i in range(0, 4 - len(accounts_list)):
                 accounts_groupbox_layout.addWidget(self.account_box_empty())
-        else:
-            for i in range(0, 4):
-                accounts_groupbox_layout.addWidget(self.account_box(accounts_list[i], color=i))
+
         return accounts_groupbox_layout
 
     def investments_groupbox(self):
@@ -241,18 +244,18 @@ class MainWindow(QMainWindow):
         investments_groupbox_layout.addWidget(balance_label)
         investments_groupbox_layout.addItem(QSpacerItem(50, 20))
 
-        color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #B15DFF, stop:0.3 #B15DFF, stop:0.3001 #72DEFF, stop:1 #72DEFF);")
-        color_strip.setFixedHeight(2)
-
-        color_layout = QHBoxLayout()
-        color_layout.setContentsMargins(0, 0, 0, 0)
-        color_layout.addWidget(color_strip)
-
-        investments_groupbox_layout.addLayout(color_layout)
+        percentages = []
         for investment in investments_list:
-            investments_groupbox_layout.addWidget(self.investment_box(investment, color="#B15DFF"))
+            percent = round((investment.balance * 100 / sum_total_investments()) / 100, 2)
+            if percent == 0:
+                percent = 0.001
+            percentages.append(percent)
+
+        investments_groupbox_layout.addWidget(
+            self.groupbox_color_strip(colors=["#9c27b0", "#7c4dff", "#8e99f3", "#6ec6ff"], amount=len(investments_list),
+                                      percent=percentages))
+        for index, investment in enumerate(investments_list):
+            investments_groupbox_layout.addWidget(self.investment_box(investment, color=index))
         if len(investments_list) < 4:
             for i in range(0, 4 - len(investments_list)):
                 investments_groupbox_layout.addWidget(self.empty_investment_box())
@@ -299,18 +302,22 @@ class MainWindow(QMainWindow):
         credit_card_groupbox_layout.addLayout(payment_box_title)
         credit_card_groupbox_layout.addItem(QSpacerItem(50, 24))
 
-        color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 #ffdc78, stop:0.2 #ffdc78, stop:0.2001 #d85f4e, stop:0.5 #d85f4e, stop:0.5001 #ffac12, stop:1 #ffac12);")
-        color_strip.setFixedHeight(2)
+        percentages = []
+        for cc in credit_cards_list:
+            percent = round((cc.max_payment * 100 / sum_cc_max_payment()) / 100, 2)
+            if percent == 0:
+                percent = 0.001
+            percentages.append(percent)
 
-        color_layout = QHBoxLayout()
-        color_layout.setContentsMargins(0, 0, 0, 0)
-        color_layout.addWidget(color_strip)
+        credit_card_groupbox_layout.addWidget(
+            self.groupbox_color_strip(colors=["#c30000", "#f4511e", "#ff8f00", "#ffeb3b"],
+                                      amount=len(credit_cards_list), percent=percentages))
 
-        credit_card_groupbox_layout.addLayout(color_layout)
-        for cc in credit_cars_list:
-            credit_card_groupbox_layout.addWidget(self.credit_card_box(cc, color="white"))
+        for index, cc in enumerate(credit_cards_list):
+            credit_card_groupbox_layout.addWidget(self.credit_card_box(cc, color=index))
+        if len(credit_cards_list) < 4:
+            for i in range(0, 4 - len(credit_cards_list)):
+                credit_card_groupbox_layout.addWidget(self.credit_card_box_empty())
 
         return credit_card_groupbox_layout
 
@@ -420,7 +427,7 @@ class MainWindow(QMainWindow):
         cc_name_layout.addWidget(cc_currency_label)
 
         cc_due_date_layout = QHBoxLayout()
-        cc_due_date_label = QLabel("Due date: " + cc.due_date)
+        cc_due_date_label = QLabel("Due date: " + cc.due_date.print_date())
         cc_due_date_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         cc_due_date_layout.addWidget(cc_due_date_label)
 
@@ -435,8 +442,14 @@ class MainWindow(QMainWindow):
         cc_balance_layout.addWidget(cc_balance_label)
 
         color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: {};".format(color))
+        if color == 0:
+            color_strip.setStyleSheet("background: #c30000")
+        if color == 1:
+            color_strip.setStyleSheet("background: #f4511e")
+        if color == 2:
+            color_strip.setStyleSheet("background: #ff8f00")
+        if color == 3:
+            color_strip.setStyleSheet("background: #ffeb3b")
         color_strip.setFixedWidth(2)
 
         cc_box_layout.addWidget(color_strip)
@@ -450,6 +463,53 @@ class MainWindow(QMainWindow):
         frame.setStyleSheet("""
                            QWidget#Frame {
                               border-bottom: 1px solid #33333D;
+                              background: transparent;
+                              }""")
+        return frame
+
+    def credit_card_box_empty(self):
+        cc_box_layout = QHBoxLayout()
+
+        cc_name_layout = QVBoxLayout()
+        cc_name_label = QLabel()
+        cc_name_label.setMinimumWidth(100)
+        cc_name_label.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        cc_currency_label = QLabel()
+        cc_currency_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        cc_name_layout.addWidget(cc_name_label)
+        cc_name_layout.addWidget(cc_currency_label)
+
+        cc_due_date_layout = QHBoxLayout()
+        cc_due_date_label = QLabel()
+        cc_due_date_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        cc_due_date_layout.addWidget(cc_due_date_label)
+
+        cc_balance_layout = QHBoxLayout()
+        cc_balance_label = QLabel()
+        cc_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        cc_balance_label.setMaximumWidth(75)
+        cc_money_sign_label = QLabel()
+        cc_money_sign_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        cc_money_sign_label.setMaximumWidth(10)
+        cc_balance_layout.addWidget(cc_money_sign_label)
+        cc_balance_layout.addWidget(cc_balance_label)
+
+        color_strip = QFrame()
+        color_strip.setStyleSheet(
+            "background: #282828;")
+        color_strip.setFixedWidth(2)
+
+        cc_box_layout.addWidget(color_strip)
+        cc_box_layout.addLayout(cc_name_layout)
+        cc_box_layout.addLayout(cc_due_date_layout)
+        cc_box_layout.addLayout(cc_balance_layout, Qt.AlignRight)
+
+        frame = QWidget()
+        frame.setObjectName("Frame")
+        frame.setLayout(cc_box_layout)
+        frame.setStyleSheet("""
+                           QWidget#Frame {
+                              border-bottom: 1px solid #282828;
                               background: transparent;
                               }""")
         return frame
@@ -482,8 +542,14 @@ class MainWindow(QMainWindow):
         investment_balance_layout.addWidget(investment_balance_label)
 
         color_strip = QFrame()
-        color_strip.setStyleSheet(
-            "background: {};".format(color))
+        if color == 0:
+            color_strip.setStyleSheet("background: #9c27b0")
+        if color == 1:
+            color_strip.setStyleSheet("background: #7c4dff")
+        if color == 2:
+            color_strip.setStyleSheet("background: #8e99f3")
+        if color == 3:
+            color_strip.setStyleSheet("background: #6ec6ff")
         color_strip.setFixedWidth(2)
 
         investment_box_layout.addWidget(color_strip)
@@ -668,58 +734,64 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    bank_list = example.create_example_banks()
+    from example import *
+
+    create_example_banks()
+    splash_pix = QPixmap("lib/loading_screen_bg.png")
+
+    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+    splash.setEnabled(False)
+    splash = QSplashScreen(splash_pix)
+
+    title = QLabel(splash)
+    title.setText("PyBank")
+    title.setGeometry(splash_pix.width() / 2, splash_pix.height() / 2, 100, 100)
+    title.setStyleSheet("font-family: Roboto; font: 22pt; background: #282828; color: white; font-style: Thin;")
+    # adding progress bar
+    progressBar = QProgressBar(splash)
+    progressBar.setMaximumWidth(620)
+    progressBar.setStyleSheet("""QProgressBar {
+                                                border: 0px;
+                                                text-align: top;
+                                                padding: 2px;
+                                                background: #33333D;
+                                                width: 15px;
+                                                }
+
+                                                QProgressBar::chunk {
+                                                padding: 5px;
+                                                background: #1EB980;
+                                                border: 0px;
+    }""")
+    progressBar.setMaximum(10)
+    progressBar.setGeometry(10, splash_pix.height() - 50, splash_pix.width(), 20)
+    progressBar.setTextVisible(False)
+
+    splash.show()
+
+    for index, bank in enumerate(os.listdir("data/")):
+        data = pickle.load(open("data/" + bank, "rb"))
+        bank_list.append(data)
+        progressBar.setValue(index)
+        app.processEvents()
     for bank in bank_list:
         for account in bank.accounts:
             accounts_list.append(account)
         for cc in bank.credit_cards:
-            credit_cars_list.append(cc)
+            credit_cards_list.append(cc)
         for investment in bank.investments:
             investments_list.append(investment)
 
     accounts_list.sort(key=operator.attrgetter("balance"), reverse=True)
-    credit_cars_list.sort(key=operator.attrgetter("due_date"))
+    credit_cards_list.sort(key=operator.attrgetter("due_date"))
+    # time.sleep(1)
+    # progressBar.setValue(i)
+    # t = time.time()
+    # while time.time() < t + 0.1:
+    #     app.processEvents()
 
-    # splash_pix = QPixmap("lib/loading_screen_bg.png")
-    #
-    # splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-    # splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-    # splash.setEnabled(False)
-    # splash = QSplashScreen(splash_pix)
-    #
-    # title = QLabel(splash)
-    # title.setText("PyBank")
-    # title.setGeometry(splash_pix.width() / 2, splash_pix.height() / 2, 100, 100)
-    # title.setStyleSheet("font-family: Roboto; font: 22pt; background: #282828; color: white; font-style: Thin;")
-    # # adding progress bar
-    # progressBar = QProgressBar(splash)
-    # progressBar.setMaximumWidth(620)
-    # progressBar.setStyleSheet("""QProgressBar {
-    #                                             border: 0px;
-    #                                             text-align: top;
-    #                                             padding: 2px;
-    #                                             background: #33333D;
-    #                                             width: 15px;
-    #                                             }
-    #
-    #                                             QProgressBar::chunk {
-    #                                             padding: 5px;
-    #                                             background: #1EB980;
-    #                                             border: 0px;
-    # }""")
-    # progressBar.setMaximum(10)
-    # progressBar.setGeometry(10, splash_pix.height() - 50, splash_pix.width(), 20)
-    # progressBar.setTextVisible(False)
-    # splash.show()
-    #
-    # for i in range(1, 11):
-    #     time.sleep(1)
-    #     progressBar.setValue(i)
-    #     t = time.time()
-    #     while time.time() < t + 0.1:
-    #         app.processEvents()
-    #
-    # # Simulate something that takes time
-    # splash.hide()
+    # Simulate something that takes time
+    splash.hide()
     GUI = MainWindow()
     app.exec_()

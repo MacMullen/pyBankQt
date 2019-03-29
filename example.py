@@ -1,4 +1,5 @@
-import jsonpickle
+import pickle
+
 
 class Bank:
     def __init__(self, name, accounts, credit_cards, investments):
@@ -49,6 +50,35 @@ class Investment:
         self.balance = balance
 
 
+class Date:
+    def __init__(self, day, month):
+        self.day = day
+        self.month = month
+
+    def print_date(self):
+        res = ""
+        if self.day < 10:
+            res = "0" + str(self.day)
+        else:
+            res = str(self.day)
+        res = res + "/"
+        if self.month < 10:
+            res = res + "0" + str(self.month)
+        else:
+            res = res + str(self.month)
+        return res
+
+    def __lt__(self, other):
+        if self.month < other.month:
+            return self.month < other.month
+        if self.month > other.month:
+            return other.month > self.month
+        if self.day < other.day:
+            return self.day < other.day
+        else:
+            return other.month > self.month
+
+
 def create_example_banks():
     transactions_account_one = []
     transactions_account_two = []
@@ -62,16 +92,26 @@ def create_example_banks():
     account_three = Account("Pension", "ARS", 3200.00, transactions_account_two, "XXXXXXXX6999")
     account_four = Account("Pension Savings", "ARS", 632.24, [], "XXXXXXXX6987")
 
-    credit_card_one = CreditCard("Visa", "XXXX-XXXX-5874", 625.00, 210.00, "20/03", "05/04")
-    credit_card_two = CreditCard("MasterCard", "XXXX-XXXX-9857", 63.00, 3.00, "02/04", "15/04")
-    credit_card_three = CreditCard("MasterCard", "XXXX-XXXX-3257", 1547.00, 365.00, "03/03", "15/03")
-    credit_card_four = CreditCard("Visa", "XXXX-XXXX-7541", 0.00, 0.00, "15/03", "30/03")
+    credit_card_one = CreditCard("Visa", "XXXX-XXXX-5874", 625.00, 210.00, Date(2, 3), "05/04")
+    credit_card_two = CreditCard("MasterCard", "XXXX-XXXX-9857", 63.00, 3.00, Date(2, 4), "15/04")
+    credit_card_three = CreditCard("MasterCard", "XXXX-XXXX-3257", 1547.00, 365.00, Date(13, 4), "15/03")
+    credit_card_four = CreditCard("Visa", "XXXX-XXXX-7541", 0.00, 0.00, Date(4, 5), "30/03")
 
     investment_one = Investment("Bitcoin", "BTC", "Cryptocurrencies", 5000.00)
     investment_two = Investment("Certificate of Deposit", "ARS", "Banking investments", 365.00)
+    investment_three = Investment("Bitcoin", "BTC", "Cryptocurrencies", 5000.00)
+    investment_four = Investment("Certificate of Deposit", "ARS", "Banking investments", 365.00)
 
     bank_one = Bank("New Bank of Stormwind", [account_one, account_two, account_three],
                     [credit_card_one, credit_card_two], [investment_one])
-    bank_two = Bank("Bank of Ogrimmar", [account_four], [credit_card_three, credit_card_four], [investment_two])
+    bank_two = Bank("Bank of Ogrimmar", [account_four], [credit_card_three, credit_card_four],
+                    [investment_two, investment_three, investment_four])
 
-    return [bank_one, bank_two]
+    pickle.dump(bank_one, open("data/save.p", "wb"))
+    pickle.dump(bank_two, open("data/save2.p", "wb"))
+
+
+if __name__ == '__main__':
+    print(Date(2, 3).print_date())
+    print(Date(12, 2).print_date())
+    print(Date(20, 12).print_date())
