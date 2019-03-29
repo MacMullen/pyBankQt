@@ -13,6 +13,8 @@ bank_list = []
 accounts_list = []
 credit_cards_list = []
 investments_list = []
+bill_list = []
+transactions_list = []
 
 
 def center(main_window: QMainWindow):
@@ -47,6 +49,20 @@ def sum_total_investments():
     sum = 0
     for investment in investments_list:
         sum = sum + investment.balance
+    return sum
+
+
+def sum_total_bills():
+    sum = 0
+    for bill in bill_list:
+        sum = sum + bill.amount
+    return sum
+
+
+def sum_latest_transactions():
+    sum = 0
+    for transaction in transactions_list:
+        sum = sum + transaction.amount
     return sum
 
 
@@ -96,25 +112,6 @@ class MainWindow(QMainWindow):
         total_balance_layout3 = QHBoxLayout()
         total_balance_layout3.addWidget(self.total_balance_groupbox3)
 
-        transactions_box = QGroupBox()
-        transactions_layout = QVBoxLayout()
-        transactions_title = QLabel("Latest Transactions")
-        transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        transactions_layout.addWidget(transactions_title)
-        transactions_layout.addWidget(
-            self.latest_transactions_box("ACCOUNT TRANSFER", "BANK 2 INVESTMENTS", "10/10/19", 40.00))
-        transactions_layout.addWidget(self.latest_transactions_box("MARKET", "BANK 1 SAVINGS", "10/10/19", -800.00))
-        transactions_layout.addWidget(
-            self.latest_transactions_box("CREDIT CARD", "BANK 2 TRANSFER", "10/10/19", -120.00))
-        transactions_layout.addWidget(
-            self.latest_transactions_box("RANDOM BILL", "BANK 2 TRANSFER", "10/10/19", -1540.00))
-        transactions_box.setLayout(transactions_layout)
-        transactions_box.setStyleSheet("""
-            QGroupBox {
-               border: 0px;
-               background: #282828;
-               }""")
-
         summary_information_layout = QHBoxLayout()
         summary_information_layout.setContentsMargins(10, 10, 10, 0)
         summary_information_layout.addLayout(total_balance_layout)
@@ -123,25 +120,9 @@ class MainWindow(QMainWindow):
 
         balance_information_layout = QHBoxLayout()
 
-        balance_bills_groupbox = QGroupBox()
-        balance_bills_groupbox_layout = QVBoxLayout()
-        balance_bills_title = QLabel("Bills")
-        balance_bills_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        balance_bills_groupbox_layout.addWidget(balance_bills_title)
-        balance_bills_groupbox_layout.addWidget(self.bills_box("CAR INSURANCE", "20/05/19", 800.00))
-        balance_bills_groupbox_layout.addWidget(self.bills_box("HOSPITAL", "20/05/19", 800.00))
-        balance_bills_groupbox_layout.addWidget(self.bills_box("ELECTRICITY", "20/05/19", 800.00))
-        balance_bills_groupbox_layout.addWidget(self.bills_box("WATER", "20/05/19", 800.53))
-        balance_bills_groupbox.setLayout(balance_bills_groupbox_layout)
-        balance_bills_groupbox.setStyleSheet("""
-            QGroupBox {
-               border: 0px;
-               background: #282828;
-               }""")
-        balance_bills_groupbox.setMaximumWidth(600)
         balance_information_layout.setContentsMargins(10, 0, 10, 0)
-        balance_information_layout.addWidget(balance_bills_groupbox)
-        balance_information_layout.addWidget(transactions_box)
+        balance_information_layout.addWidget(self.bills_groupbox())
+        balance_information_layout.addWidget(self.latest_transactions_groupbox())
 
         bank_data_layout = QVBoxLayout()
         bank_data_layout.addLayout(summary_information_layout)
@@ -320,6 +301,51 @@ class MainWindow(QMainWindow):
                 credit_card_groupbox_layout.addWidget(self.credit_card_box_empty())
 
         return credit_card_groupbox_layout
+
+    def bills_groupbox(self):
+        balance_bills_groupbox = QGroupBox()
+
+        balance_bills_groupbox_layout = QVBoxLayout()
+        balance_bills_title = QLabel("Bills")
+        balance_bills_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        balance_label = QLabel("$" + str(sum_total_bills()))
+        balance_label.setStyleSheet(
+            "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
+        balance_bills_groupbox_layout.addWidget(balance_bills_title)
+        balance_bills_groupbox_layout.addWidget(balance_label)
+
+        for bill in bill_list:
+            balance_bills_groupbox_layout.addWidget(self.bills_box(bill))
+
+        balance_bills_groupbox.setLayout(balance_bills_groupbox_layout)
+        balance_bills_groupbox.setStyleSheet("""
+            QGroupBox {
+               border: 0px;
+               background: #282828;
+               }""")
+        balance_bills_groupbox.setMaximumWidth(600)
+
+        return balance_bills_groupbox
+
+    def latest_transactions_groupbox(self):
+        transactions_box = QGroupBox()
+        transactions_layout = QVBoxLayout()
+        transactions_title = QLabel("Latest Transactions")
+        transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        transactions_layout.addWidget(transactions_title)
+        balance_label = QLabel("$" + str(sum_latest_transactions()))
+        balance_label.setStyleSheet(
+            "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
+        transactions_layout.addWidget(balance_label)
+        for transaction in transactions_list:
+            transactions_layout.addWidget(self.latest_transactions_box(transaction))
+        transactions_box.setLayout(transactions_layout)
+        transactions_box.setStyleSheet("""
+            QGroupBox {
+               border: 0px;
+               background: #282828;
+               }""")
+        return transactions_box
 
     def account_box(self, account: example.Account, color: int):
         account_box_layout = QHBoxLayout()
@@ -614,20 +640,20 @@ class MainWindow(QMainWindow):
                        }""")
         return frame
 
-    def bills_box(self, bill_name: str, due_date: str, amount: int):
+    def bills_box(self, bill: example.Bill):
         account_box4 = QHBoxLayout()
 
-        account_name_label4 = QLabel(bill_name)
+        account_name_label4 = QLabel(bill.name)
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
         account_name_label4_layout = QHBoxLayout()
         account_name_label4_layout.addWidget(account_name_label4)
 
-        account_number_label4 = QLabel("Date: " + due_date)
+        account_number_label4 = QLabel("Date: " + bill.due_date.print_date())
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
 
-        account_balance_label4 = QLabel(str(amount))
+        account_balance_label4 = QLabel(str(bill.amount))
         account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
         account_balance_label4.setMaximumWidth(75)
         account_balance_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
@@ -652,13 +678,13 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def latest_transactions_box(self, description: str, bank_account_name: str, date: str, amount: int):
+    def latest_transactions_box(self, transaction: example.Transaction):
         account_box4 = QHBoxLayout()
 
-        account_name_label4 = QLabel(description)
+        account_name_label4 = QLabel(transaction.description)
         account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
         account_name_label4.setMinimumWidth(180)
-        account_bank_name_label4 = QLabel(bank_account_name)
+        account_bank_name_label4 = QLabel(transaction.bank_name)
         account_bank_name_label4.setMaximumWidth(50)
         account_bank_name_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         account_bank_name_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
@@ -666,14 +692,14 @@ class MainWindow(QMainWindow):
         account_name_label4_layout.addWidget(account_name_label4)
         account_name_label4_layout.addWidget(account_bank_name_label4)
 
-        account_number_label4 = QLabel("Date: " + date)
+        account_number_label4 = QLabel("Date: " + transaction.date.print_date())
         account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
         account_number_label4.setAlignment(Qt.AlignCenter)
         account_number_label4_layout = QHBoxLayout()
         account_number_label4_layout.addWidget(account_number_label4)
 
-        account_balance_label4 = QLabel(str(amount))
-        if amount < 0:
+        account_balance_label4 = QLabel(str(transaction.amount))
+        if transaction.amount < 0:
             account_balance_label4.setStyleSheet(
                 "font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
         else:
@@ -782,9 +808,15 @@ if __name__ == "__main__":
             credit_cards_list.append(cc)
         for investment in bank.investments:
             investments_list.append(investment)
+        for bill in bank.bills:
+            bill_list.append(bill)
+        for transaction in bank.transactions:
+            transactions_list.append(transaction)
 
     accounts_list.sort(key=operator.attrgetter("balance"), reverse=True)
     credit_cards_list.sort(key=operator.attrgetter("due_date"))
+    bill_list.sort(key=operator.attrgetter("due_date"))
+    transactions_list.sort(key=operator.attrgetter("date"))
     # time.sleep(1)
     # progressBar.setValue(i)
     # t = time.time()
