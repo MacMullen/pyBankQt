@@ -85,10 +85,10 @@ class Date:
 def create_example_banks():
     transactions_account_one = []
     transactions_account_two = []
-    for i in range(0, 10):
+    for i in range(0, 3):
         transactions_account_one.append(Transaction("CC Payment", Date(20, 12), 623.00, "SANTANDER"))
-    for i in range(0, 15):
-        transactions_account_two.append(Transaction("Market", Date(12, 5), 25.30, "CHASE"))
+    for i in range(0, 2):
+        transactions_account_two.append(Transaction("Market", Date(12, 5), -25.30, "CHASE"))
 
     account_one = Account("Salary", "ARS", 5200.00, transactions_account_one, "XXXXXXXX6985")
     account_two = Account("Savings", "USD", 256.00, [], "XXXXXXXX1154")

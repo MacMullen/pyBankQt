@@ -60,10 +60,14 @@ def sum_total_bills():
 
 
 def sum_latest_transactions():
-    sum = 0
+    sum_outcome = 0
+    sum_income = 0
     for transaction in transactions_list:
-        sum = sum + transaction.amount
-    return sum
+        if transaction.amount < 0:
+            sum_outcome = sum_outcome - transaction.amount
+        else:
+            sum_income = sum_income + transaction.amount
+    return [sum_income, sum_outcome]
 
 
 class MainWindow(QMainWindow):
@@ -193,8 +197,8 @@ class MainWindow(QMainWindow):
         for acc in accounts_list:
             percent = round((acc.balance * 100 / sum_accounts_balance()) / 100, 2)
             if percent == 0:
-                percent = 0.001
-            percentages.append(percent)
+                percent = 0.002
+            percentages.append(percent - 0.002)
 
         color_layout = QHBoxLayout()
         color_layout.setContentsMargins(0, 0, 0, 0)
@@ -229,8 +233,8 @@ class MainWindow(QMainWindow):
         for investment in investments_list:
             percent = round((investment.balance * 100 / sum_total_investments()) / 100, 2)
             if percent == 0:
-                percent = 0.001
-            percentages.append(percent)
+                percent = 0.002
+            percentages.append(percent - 0.002)
 
         investments_groupbox_layout.addWidget(
             self.groupbox_color_strip(colors=["#9c27b0", "#7c4dff", "#8e99f3", "#6ec6ff"], amount=len(investments_list),
@@ -287,8 +291,8 @@ class MainWindow(QMainWindow):
         for cc in credit_cards_list:
             percent = round((cc.max_payment * 100 / sum_cc_max_payment()) / 100, 2)
             if percent == 0:
-                percent = 0.001
-            percentages.append(percent)
+                percent = 0.002
+            percentages.append(percent - 0.002)
 
         credit_card_groupbox_layout.addWidget(
             self.groupbox_color_strip(colors=["#c30000", "#f4511e", "#ff8f00", "#ffeb3b"],
@@ -333,11 +337,37 @@ class MainWindow(QMainWindow):
         transactions_title = QLabel("Latest Transactions")
         transactions_title.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
         transactions_layout.addWidget(transactions_title)
-        balance_label = QLabel("$" + str(sum_latest_transactions()))
-        balance_label.setStyleSheet(
-            "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
-        transactions_layout.addWidget(balance_label)
-        for transaction in transactions_list:
+
+        balance_layout = QHBoxLayout()
+        balance_label_income = QLabel("$" + str(sum_latest_transactions()[0]))
+        balance_label_income.setStyleSheet(
+            "font-family: Roboto; font: 24pt; background: #282828; color: #1EB980; font-weight: bold;")
+        balance_label_outcome = QLabel("$" + str(sum_latest_transactions()[1]))
+        balance_label_outcome.setAlignment(Qt.AlignRight)
+        balance_label_outcome.setStyleSheet(
+            "font-family: Roboto; font: 24pt; background: #282828; color: #E53935; font-weight: bold;")
+        balance_layout.addWidget(balance_label_income)
+        balance_layout.addWidget(balance_label_outcome)
+
+        percentage_income = 0.0
+        percentage_outcome = 0.0
+        sum_income = 0
+        sum_outcome = 0
+        for transaction in transactions_list[:4]:
+            if transaction.amount < 0:
+                sum_outcome = sum_outcome + (transaction.amount * -1)
+            else:
+                sum_income = sum_income + transaction.amount
+        percentage_income = round((sum_income / (sum_income + sum_outcome)) - 0.002 / 100, 2)
+        percentage_outcome = round((sum_outcome / (sum_income + sum_outcome)) - 0.002 / 100, 2)
+
+        transactions_layout.addLayout(balance_layout)
+
+        transactions_layout.addWidget(self.groupbox_color_strip(colors=["#1EB980", "#E53935"],
+                                                                amount=2,
+                                                                percent=[percentage_income, percentage_outcome]))
+
+        for transaction in transactions_list[:5]:
             transactions_layout.addWidget(self.latest_transactions_box(transaction))
         transactions_box.setLayout(transactions_layout)
         transactions_box.setStyleSheet("""
@@ -741,7 +771,7 @@ class MainWindow(QMainWindow):
                     colors[3]))
         if amount == 3:
             color_strip.setStyleSheet(
-                "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:4 {});".format(
+                "background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:{} {}, stop:1 {});".format(
                     colors[0], percent[0], colors[0], percent[0] + 0.0001, colors[1], percent[0] + percent[1],
                     colors[1],
                                                       percent[0] + percent[1] + 0.0001, colors[2], colors[2]))
