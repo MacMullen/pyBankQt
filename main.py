@@ -6,6 +6,7 @@ import os, os.path
 import pickle
 import operator
 import example
+from lib.classes import *
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
@@ -520,7 +521,7 @@ class MainWindow(QMainWindow):
                }""")
         return transactions_box
 
-    def account_box(self, account: example.Account, color: int):
+    def account_box(self, account: Account, color: int):
         account_box_layout = QHBoxLayout()
 
         account_name_layout = QHBoxLayout()
@@ -613,7 +614,7 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def credit_card_box(self, cc: example.CreditCard, color):
+    def credit_card_box(self, cc: CreditCard, color):
         cc_box_layout = QHBoxLayout()
 
         cc_name_layout = QVBoxLayout()
@@ -713,7 +714,7 @@ class MainWindow(QMainWindow):
                               }""")
         return frame
 
-    def investment_box(self, investment: example.Investment, color):
+    def investment_box(self, investment: Investment, color):
         investment_box_layout = QHBoxLayout()
 
         investment_name_layout = QVBoxLayout()
@@ -813,7 +814,7 @@ class MainWindow(QMainWindow):
                        }""")
         return frame
 
-    def bills_box(self, bill: example.Bill):
+    def bills_box(self, bill: Bill):
         account_box4 = QHBoxLayout()
 
         account_name_label4 = QLabel(bill.name)
@@ -851,7 +852,7 @@ class MainWindow(QMainWindow):
                }""")
         return frame
 
-    def latest_transactions_box(self, transaction: example.Transaction):
+    def latest_transactions_box(self, transaction: Transaction):
         account_box4 = QHBoxLayout()
 
         account_name_label4 = QLabel(transaction.description)
