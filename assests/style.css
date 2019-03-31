@@ -1,0 +1,12 @@
+.QToolButton {
+    color: #121212;
+    font-family: Roboto;
+    font: 12px;
+    font-weight: bold;
+    background: transparent;
+    border: 0px;
+}
+
+.QToolButton:checked {
+    color: white;
+}

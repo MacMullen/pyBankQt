@@ -75,7 +75,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.resize(1280, 720)
         self.setWindowTitle("PyBank")
-        self.setWindowIcon(QIcon('lib/ic_account_balance_2x.png'))
+        self.setWindowIcon(QIcon('assests/appicon.png'))
+        center(self)
 
         self.total_balance_groupbox = QGroupBox("")
         self.total_balance_groupbox.setLayout(self.accounts_groupbox())
@@ -117,67 +118,208 @@ class MainWindow(QMainWindow):
         total_balance_layout3.addWidget(self.total_balance_groupbox3)
 
         summary_information_layout = QHBoxLayout()
-        summary_information_layout.setContentsMargins(10, 10, 10, 0)
+        summary_information_layout.setContentsMargins(0, 0, 0, 0)
         summary_information_layout.addLayout(total_balance_layout)
         summary_information_layout.addLayout(total_balance_layout2)
         summary_information_layout.addLayout(total_balance_layout3)
 
         balance_information_layout = QHBoxLayout()
 
-        balance_information_layout.setContentsMargins(10, 0, 10, 0)
+        balance_information_layout.setContentsMargins(0, 0, 0, 0)
         balance_information_layout.addWidget(self.bills_groupbox())
         balance_information_layout.addWidget(self.latest_transactions_groupbox())
 
         bank_data_layout = QVBoxLayout()
         bank_data_layout.addLayout(summary_information_layout)
         bank_data_layout.addLayout(balance_information_layout)
-
         self.overview_data_widget = QWidget()
         self.overview_data_widget.setLayout(bank_data_layout)
 
-        account_cc_groupbox = QGroupBox("Credit Cards")
-        account_cc_layout_box = QVBoxLayout()
-        account_cc_groupbox.setLayout(account_cc_layout_box)
-        account_cc_overview = QHBoxLayout()
-        account_cc_overview.addWidget(account_cc_groupbox)
-
-        account_transactions_groupbox = QGroupBox("Investments")
-        account_transactions_layout_box = QVBoxLayout()
-        account_transactions_groupbox.setLayout(account_transactions_layout_box)
-        account_transactions_overview = QHBoxLayout()
-        account_transactions_overview.addWidget(account_transactions_groupbox)
-
-        account_data_layout = QVBoxLayout()
-        account_data_layout.addLayout(account_cc_overview)
-        account_data_layout.addLayout(account_transactions_overview)
+        coming_soon_layout = QVBoxLayout()
+        coming_soon_label = QLabel("COMING SOON")
+        coming_soon_label.setStyleSheet("color: white;")
+        coming_soon_layout.addWidget(coming_soon_label)
+        self.coming_soon_widget = QWidget()
+        self.coming_soon_widget.setLayout(coming_soon_layout)
+        self.coming_soon_widget.hide()
 
         self.overview_data_widget.setLayout(bank_data_layout)
 
+        main_menu_bg = QFrame()
+        main_menu_bg.setStyleSheet("background: #121212;")
+        main_menu_bg.setMinimumWidth(100)
+        main_menu_bg.setMaximumWidth(100)
         main_menu_layout = QVBoxLayout()
-        self.home_window.addLayout(main_menu_layout)
+        # main_menu_layout.setContentsMargins(0, 0, 0, 0)
+        main_menu_layout.addWidget(self.menu_overview_button(), 0, Qt.AlignCenter)
+        main_menu_layout.addWidget(self.menu_account_button(), 0, Qt.AlignCenter)
+        main_menu_layout.addWidget(self.menu_credit_cards_button(), 0, Qt.AlignCenter)
+        main_menu_layout.addWidget(self.menu_investments_button(), 0, Qt.AlignCenter)
+        main_menu_layout.addWidget(self.menu_bills_button(), 0, Qt.AlignCenter)
+        main_menu_layout.addWidget(self.menu_transactions_button(), 0, Qt.AlignCenter)
+        main_menu_layout.setSpacing(0)
+        main_menu_bg.setLayout(main_menu_layout)
+        self.home_window.addWidget(main_menu_bg, 0, Qt.AlignLeft)
         self.home_window.addWidget(self.overview_data_widget)
+        self.home_window.addWidget(self.coming_soon_widget)
+        self.home_window.setContentsMargins(0, 0, 0, 0)
         # self.home_window.addWidget(self.account_data_widget) How to add several views
 
         self.base_layout = QWidget()
         self.base_layout.setStyleSheet("""
         QWidget {
-            background: #1e1c1d;
+            background: #181818;
         }""")
         self.setCentralWidget(self.base_layout)
         self.base_layout.setLayout(self.home_window)
 
         # Property to make the window borderless
         # self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
-
         self.show()
 
-    def hide_summary_data(self, item):
-        if item.text() == "Overview":
-            self.overview_data_widget.show()
-            self.account_data_widget.hide()
-        else:
-            self.overview_data_widget.hide()
-            self.account_data_widget.show()
+    def show_summary_data(self):
+        self.overview_data_widget.show()
+        self.coming_soon_widget.hide()
+        self.home_button.setChecked(True)
+        self.account_button.setChecked(False)
+        self.credit_cards_button.setChecked(False)
+        self.investments_button.setChecked(False)
+        self.bills_button.setChecked(False)
+        self.transactions_button.setChecked(False)
+
+    def show_accounts_data(self):
+        self.overview_data_widget.hide()
+        self.coming_soon_widget.show()
+        self.home_button.setChecked(False)
+        self.account_button.setChecked(True)
+        self.credit_cards_button.setChecked(False)
+        self.investments_button.setChecked(False)
+        self.bills_button.setChecked(False)
+        self.transactions_button.setChecked(False)
+
+    def show_credit_cards_data(self):
+        self.overview_data_widget.hide()
+        self.coming_soon_widget.show()
+        self.home_button.setChecked(False)
+        self.account_button.setChecked(False)
+        self.credit_cards_button.setChecked(True)
+        self.investments_button.setChecked(False)
+        self.bills_button.setChecked(False)
+        self.transactions_button.setChecked(False)
+
+    def show_investments_data(self):
+        self.overview_data_widget.hide()
+        self.coming_soon_widget.show()
+        self.home_button.setChecked(False)
+        self.account_button.setChecked(False)
+        self.credit_cards_button.setChecked(False)
+        self.investments_button.setChecked(True)
+        self.bills_button.setChecked(False)
+        self.transactions_button.setChecked(False)
+
+    def show_bills_data(self):
+        self.overview_data_widget.hide()
+        self.coming_soon_widget.show()
+        self.home_button.setChecked(False)
+        self.account_button.setChecked(False)
+        self.credit_cards_button.setChecked(False)
+        self.investments_button.setChecked(False)
+        self.bills_button.setChecked(True)
+        self.transactions_button.setChecked(False)
+
+    def show_transactions_data(self):
+        self.overview_data_widget.hide()
+        self.coming_soon_widget.show()
+        self.home_button.setChecked(False)
+        self.account_button.setChecked(False)
+        self.credit_cards_button.setChecked(False)
+        self.investments_button.setChecked(False)
+        self.bills_button.setChecked(False)
+        self.transactions_button.setChecked(True)
+
+    def menu_overview_button(self):
+        self.home_button = QToolButton()
+        self.home_button.setText("Overview")
+        self.home_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.home_button.setMinimumWidth(50)
+        self.home_button.setMaximumHeight(50)
+        self.home_button.setIcon(QIcon("assests/overview_white_icon.png"))
+        self.home_button.setStyleSheet(open('assests/style.css').read())
+        self.home_button.setIconSize(QSize(25, 25))
+        self.home_button.setCheckable(True)
+        self.home_button.clicked.connect(self.show_summary_data)
+
+        return self.home_button
+
+    def menu_account_button(self):
+        self.account_button = QToolButton()
+        self.account_button.setText("Accounts")
+        self.account_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.account_button.setMinimumWidth(50)
+        self.account_button.setMaximumHeight(50)
+        self.account_button.setIcon(QIcon("assests/accounts_white_icon.png"))
+        self.account_button.setStyleSheet(open('assests/style.css').read())
+        self.account_button.setIconSize(QSize(25, 25))
+        self.account_button.setCheckable(True)
+        self.account_button.clicked.connect(self.show_accounts_data)
+
+        return self.account_button
+
+    def menu_credit_cards_button(self):
+        self.credit_cards_button = QToolButton()
+        self.credit_cards_button.setText("Credit Cards")
+        self.credit_cards_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.credit_cards_button.setMinimumWidth(50)
+        self.credit_cards_button.setMaximumHeight(50)
+        self.credit_cards_button.setIcon(QIcon("assests/credit_card_white_icon.png"))
+        self.credit_cards_button.setStyleSheet(open('assests/style.css').read())
+        self.credit_cards_button.setIconSize(QSize(25, 25))
+        self.credit_cards_button.setCheckable(True)
+        self.credit_cards_button.clicked.connect(self.show_credit_cards_data)
+
+        return self.credit_cards_button
+
+    def menu_investments_button(self):
+        self.investments_button = QToolButton()
+        self.investments_button.setText("Investments")
+        self.investments_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.investments_button.setMinimumWidth(50)
+        self.investments_button.setMaximumHeight(50)
+        self.investments_button.setIcon(QIcon("assests/investments_white_icon.png"))
+        self.investments_button.setStyleSheet(open('assests/style.css').read())
+        self.investments_button.setIconSize(QSize(25, 25))
+        self.investments_button.setCheckable(True)
+        self.investments_button.clicked.connect(self.show_investments_data)
+
+        return self.investments_button
+
+    def menu_bills_button(self):
+        self.bills_button = QToolButton()
+        self.bills_button.setText("Bills")
+        self.bills_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.bills_button.setMinimumWidth(50)
+        self.bills_button.setMaximumHeight(50)
+        self.bills_button.setIcon(QIcon("assests/bills_white_icon.png"))
+        self.bills_button.setStyleSheet(open('assests/style.css').read())
+        self.bills_button.setIconSize(QSize(25, 25))
+        self.bills_button.setCheckable(True)
+        self.bills_button.clicked.connect(self.show_bills_data)
+
+        return self.bills_button
+
+    def menu_transactions_button(self):
+        self.transactions_button = QToolButton()
+        self.transactions_button.setText("Transactions")
+        self.transactions_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.transactions_button.setMinimumWidth(50)
+        self.transactions_button.setMaximumHeight(50)
+        self.transactions_button.setIcon(QIcon("assests/transactions_white_icon.png"))
+        self.transactions_button.setStyleSheet(open('assests/style.css').read())
+        self.transactions_button.setIconSize(QSize(25, 25))
+        self.transactions_button.setCheckable(True)
+        self.transactions_button.clicked.connect(self.show_transactions_data)
+
+        return self.transactions_button
 
     def accounts_groupbox(self):
         accounts_groupbox_layout = QVBoxLayout()
@@ -317,6 +459,7 @@ class MainWindow(QMainWindow):
             "font-family: Roboto; font: 24pt; background: #282828; color: white; font-weight: bold;")
         balance_bills_groupbox_layout.addWidget(balance_bills_title)
         balance_bills_groupbox_layout.addWidget(balance_label)
+        balance_bills_groupbox_layout.addWidget(self.groupbox_color_strip(colors=["#282828"], amount=1, percent=[]))
 
         for bill in bill_list:
             balance_bills_groupbox_layout.addWidget(self.bills_box(bill))
@@ -793,7 +936,7 @@ if __name__ == "__main__":
     from example import *
 
     create_example_banks()
-    splash_pix = QPixmap("lib/loading_screen_bg.png")
+    splash_pix = QPixmap("assests/loading_screen_bg.png")
 
     splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
     splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
@@ -856,4 +999,5 @@ if __name__ == "__main__":
     # Simulate something that takes time
     splash.hide()
     GUI = MainWindow()
+    GUI.home_button.setChecked(True)
     app.exec_()

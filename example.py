@@ -109,12 +109,13 @@ def create_example_banks():
     bill_two = Bill("HOSPITAL", Date(19, 5), 1200)
     bill_three = Bill("ELECTRICITY", Date(2, 5), 30)
     bill_four = Bill("WATER", Date(31, 5), 555.63)
+    bill_five = Bill("GAS", Date(4, 5), 28.63)
 
     bank_one = Bank("New Bank of Stormwind", [account_one, account_two, account_three],
                     [credit_card_one, credit_card_two], [investment_one], [bill_one, bill_two],
                     transactions_account_one)
     bank_two = Bank("Bank of Ogrimmar", [account_four], [credit_card_three, credit_card_four],
-                    [investment_two, investment_three, investment_four], [bill_three, bill_four],
+                    [investment_two, investment_three, investment_four], [bill_three, bill_four, bill_five],
                     transactions_account_two)
 
     pickle.dump(bank_one, open("data/save.p", "wb"))
