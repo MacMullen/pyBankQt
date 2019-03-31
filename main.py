@@ -927,37 +927,11 @@ class MainWindow(QMainWindow):
         return color_strip
 
 
-# Source : https://wiki.python.org/moin/PyQt/Movie%20splash%20screen
-class MovieSplashScreen(QSplashScreen):
-
-    def __init__(self, movie, parent=None):
-        movie.jumpToFrame(0)
-        pixmap = QPixmap(movie.frameRect().size())
-
-        QSplashScreen.__init__(self, pixmap)
-        self.movie = movie
-        self.movie.frameChanged.connect(self.repaint)
-
-    def showEvent(self, event):
-        self.movie.start()
-
-    def hideEvent(self, event):
-        self.movie.stop()
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        pixmap = self.movie.currentPixmap()
-        self.setMask(pixmap.mask())
-        painter.drawPixmap(0, 0, pixmap)
-
-    def sizeHint(self):
-        return self.movie.scaledSize()
-
-
 def init_data():
-    for index, bank in enumerate(os.listdir("data/")):
+    for index, bank in enumerate(os.listdir("data/"), 1):
         data = pickle.load(open("data/" + bank, "rb"))
         bank_list.append(data)
+        progressBar.setValue((index / len(os.listdir("data/")) * 10))
     for bank in bank_list:
         for account in bank.accounts:
             accounts_list.append(account)
@@ -989,13 +963,22 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     example.create_example_banks()
     movie = QMovie("assests/source.gif")
-    splash = MovieSplashScreen(movie)
+    pixmap = QPixmap("assests/loading_screen_bg.png")
+    splash = QSplashScreen(pixmap)
+    progressBar = QProgressBar(splash)
+    progressBar.setMaximumWidth(620)
+    progressBar.setStyleSheet(open("assests/style.css").read())
+    progressBar.setMaximum(10)
+    progressBar.setGeometry(10, pixmap.height() - 50, pixmap.width(), 20)
+    progressBar.setTextVisible(False)
+
     splash.show()
     start = time.time()
     thread = GenericThread()
     thread.start()
     while thread.isRunning():
         app.processEvents()
+    splash.hide()
     GUI = MainWindow()
     GUI.home_button.setChecked(True)
     app.exec_()
