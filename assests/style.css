@@ -10,3 +10,17 @@
 .QToolButton:checked {
     color: white;
 }
+
+QProgressBar {
+    border: 0px;
+    text-align: top;
+    padding: 2px;
+    background: #33333D;
+    width: 15px;
+}
+
+QProgressBar::chunk {
+    padding: 5px;
+    background: #1EB980;
+    border: 0px;
+}

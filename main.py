@@ -6,6 +6,7 @@ import os, os.path
 import pickle
 import operator
 import example
+import time
 from lib.classes import *
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
@@ -151,14 +152,14 @@ class MainWindow(QMainWindow):
         main_menu_bg.setMinimumWidth(100)
         main_menu_bg.setMaximumWidth(100)
         main_menu_layout = QVBoxLayout()
-        # main_menu_layout.setContentsMargins(0, 0, 0, 0)
+        main_menu_layout.setContentsMargins(0, 0, 0, 0)
+        main_menu_layout.setSpacing(0)
         main_menu_layout.addWidget(self.menu_overview_button(), 0, Qt.AlignCenter)
         main_menu_layout.addWidget(self.menu_account_button(), 0, Qt.AlignCenter)
         main_menu_layout.addWidget(self.menu_credit_cards_button(), 0, Qt.AlignCenter)
         main_menu_layout.addWidget(self.menu_investments_button(), 0, Qt.AlignCenter)
         main_menu_layout.addWidget(self.menu_bills_button(), 0, Qt.AlignCenter)
         main_menu_layout.addWidget(self.menu_transactions_button(), 0, Qt.AlignCenter)
-        main_menu_layout.setSpacing(0)
         main_menu_bg.setLayout(main_menu_layout)
         self.home_window.addWidget(main_menu_bg, 0, Qt.AlignLeft)
         self.home_window.addWidget(self.overview_data_widget)
@@ -726,11 +727,6 @@ class MainWindow(QMainWindow):
         investment_name_layout.addWidget(investment_name_label)
         investment_name_layout.addWidget(investment_currency_label)
 
-        investment_type_layout = QHBoxLayout()
-        investment_type_label = QLabel(investment.type)
-        investment_type_label.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        investment_type_layout.addWidget(investment_type_label)
-
         investment_balance_layout = QHBoxLayout()
         investment_balance_label = QLabel(str(investment.balance))
         investment_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
@@ -754,7 +750,6 @@ class MainWindow(QMainWindow):
 
         investment_box_layout.addWidget(color_strip)
         investment_box_layout.addLayout(investment_name_layout)
-        investment_box_layout.addLayout(investment_type_layout)
         investment_box_layout.addLayout(investment_balance_layout, Qt.AlignRight)
 
         frame = QWidget()
@@ -932,49 +927,37 @@ class MainWindow(QMainWindow):
         return color_strip
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    from example import *
+# Source : https://wiki.python.org/moin/PyQt/Movie%20splash%20screen
+class MovieSplashScreen(QSplashScreen):
 
-    create_example_banks()
-    splash_pix = QPixmap("assests/loading_screen_bg.png")
+    def __init__(self, movie, parent=None):
+        movie.jumpToFrame(0)
+        pixmap = QPixmap(movie.frameRect().size())
 
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-    splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-    splash.setEnabled(False)
-    splash = QSplashScreen(splash_pix)
+        QSplashScreen.__init__(self, pixmap)
+        self.movie = movie
+        self.movie.frameChanged.connect(self.repaint)
 
-    title = QLabel(splash)
-    title.setText("PyBank")
-    title.setGeometry(splash_pix.width() / 2, splash_pix.height() / 2, 100, 100)
-    title.setStyleSheet("font-family: Roboto; font: 22pt; background: #282828; color: white; font-style: Thin;")
-    # adding progress bar
-    progressBar = QProgressBar(splash)
-    progressBar.setMaximumWidth(620)
-    progressBar.setStyleSheet("""QProgressBar {
-                                                border: 0px;
-                                                text-align: top;
-                                                padding: 2px;
-                                                background: #33333D;
-                                                width: 15px;
-                                                }
+    def showEvent(self, event):
+        self.movie.start()
 
-                                                QProgressBar::chunk {
-                                                padding: 5px;
-                                                background: #1EB980;
-                                                border: 0px;
-    }""")
-    progressBar.setMaximum(10)
-    progressBar.setGeometry(10, splash_pix.height() - 50, splash_pix.width(), 20)
-    progressBar.setTextVisible(False)
+    def hideEvent(self, event):
+        self.movie.stop()
 
-    splash.show()
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        pixmap = self.movie.currentPixmap()
+        self.setMask(pixmap.mask())
+        painter.drawPixmap(0, 0, pixmap)
 
+    def sizeHint(self):
+        return self.movie.scaledSize()
+
+
+def init_data():
     for index, bank in enumerate(os.listdir("data/")):
         data = pickle.load(open("data/" + bank, "rb"))
         bank_list.append(data)
-        progressBar.setValue(index)
-        app.processEvents()
     for bank in bank_list:
         for account in bank.accounts:
             accounts_list.append(account)
@@ -986,19 +969,33 @@ if __name__ == "__main__":
             bill_list.append(bill)
         for transaction in bank.transactions:
             transactions_list.append(transaction)
-
     accounts_list.sort(key=operator.attrgetter("balance"), reverse=True)
     credit_cards_list.sort(key=operator.attrgetter("due_date"))
     bill_list.sort(key=operator.attrgetter("due_date"))
     transactions_list.sort(key=operator.attrgetter("date"))
-    # time.sleep(1)
-    # progressBar.setValue(i)
-    # t = time.time()
-    # while time.time() < t + 0.1:
-    #     app.processEvents()
 
-    # Simulate something that takes time
-    splash.hide()
+
+# Source: https://joplaete.wordpress.com/2010/07/21/threading-with-pyqt4/
+class GenericThread(QThread):
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        init_data()
+        return
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    example.create_example_banks()
+    movie = QMovie("assests/source.gif")
+    splash = MovieSplashScreen(movie)
+    splash.show()
+    start = time.time()
+    thread = GenericThread()
+    thread.start()
+    while thread.isRunning():
+        app.processEvents()
     GUI = MainWindow()
     GUI.home_button.setChecked(True)
     app.exec_()
