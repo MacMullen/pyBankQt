@@ -5,7 +5,6 @@ import sys
 import os, os.path
 import pickle
 import operator
-import example
 import time
 from lib.classes import *
 
@@ -930,6 +929,7 @@ class MainWindow(QMainWindow):
 def init_data():
     for index, bank in enumerate(os.listdir("data/"), 1):
         data = pickle.load(open("data/" + bank, "rb"))
+        time.sleep(3)
         bank_list.append(data)
         progressBar.setValue((index / len(os.listdir("data/")) * 10))
     for bank in bank_list:
@@ -955,22 +955,32 @@ class GenericThread(QThread):
         self.wait()
 
     def run(self):
+        for script in os.listdir("scripts"):
+            os.system("python3 scripts/{}".format(script))
         init_data()
         return
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    example.create_example_banks()
     movie = QMovie("assests/source.gif")
     pixmap = QPixmap("assests/loading_screen_bg.png")
     splash = QSplashScreen(pixmap)
-    progressBar = QProgressBar(splash)
+    progressBar = QProgressBar()
     progressBar.setMaximumWidth(620)
     progressBar.setStyleSheet(open("assests/style.css").read())
     progressBar.setMaximum(10)
-    progressBar.setGeometry(10, pixmap.height() - 50, pixmap.width(), 20)
     progressBar.setTextVisible(False)
+    layout = QVBoxLayout(splash)
+    title_label = QLabel()
+    title_label.setText("pyBank")
+    title_label.setStyleSheet("background: transparent; color: white; font: 50px;")
+    title_label.setAlignment(Qt.AlignCenter)
+    title_pixmap = QPixmap("assests/appicon.png")
+    title_label.setPixmap(QPixmap("assests/app_logo.png"))
+    layout.addWidget(title_label)
+    layout.addWidget(progressBar)
+    progressBar.setMaximumHeight(20)
 
     splash.show()
     start = time.time()

@@ -1,7 +1,8 @@
 import pickle
+import os
 from lib.classes import *
 
-def create_example_banks():
+if __name__ == "__main__":
     transactions_account_one = []
     transactions_account_two = []
     for i in range(0, 3):
@@ -36,6 +37,6 @@ def create_example_banks():
     bank_two = Bank("Bank of Ogrimmar", [account_four], [credit_card_three, credit_card_four],
                     [investment_two, investment_three, investment_four], [bill_three, bill_four, bill_five],
                     transactions_account_two)
-
+    os.makedirs("data/", exist_ok=True)
     pickle.dump(bank_one, open("data/save.p", "wb"))
     pickle.dump(bank_two, open("data/save2.p", "wb"))
