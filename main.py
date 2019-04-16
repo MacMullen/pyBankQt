@@ -10,6 +10,7 @@ from lib.classes import *
 
 #  Sources: Icons = Material Design icons by Google (https://github.com/google/material-design-icons)
 
+correct_pass = False
 bank_list = []
 accounts_list = []
 credit_cards_list = []
@@ -928,10 +929,9 @@ class MainWindow(QMainWindow):
 
 def init_data():
     for index, bank in enumerate(os.listdir("data/"), 1):
-        data = pickle.load(open("data/" + bank, "rb"))
-        time.sleep(3)
+        path = os.path.abspath("data/" + bank)
+        data = pickle.load(open(path, "rb"))
         bank_list.append(data)
-        progressBar.setValue((index / len(os.listdir("data/")) * 10))
     for bank in bank_list:
         for account in bank.accounts:
             accounts_list.append(account)
@@ -955,11 +955,20 @@ class GenericThread(QThread):
         self.wait()
 
     def run(self):
-        for script in os.listdir("scripts"):
-            os.system("python3 scripts/{}".format(script))
+        for index, script in enumerate(os.listdir("scripts"), 1):
+            os.system("python scripts/{}".format(script))
+            progressBar.setValue((index / len(os.listdir("data/")) * 10))
+            time.sleep(2)  # Time to simulate actual progress.
         init_data()
         return
 
+
+def hide_pass_line():
+    if pw.text() == "123":
+        global correct_pass
+        correct_pass = True
+        pw.hide()
+        button_next.hide()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -978,12 +987,25 @@ if __name__ == "__main__":
     title_label.setAlignment(Qt.AlignCenter)
     title_pixmap = QPixmap("assests/appicon.png")
     title_label.setPixmap(QPixmap("assests/app_logo.png"))
+
+    pw = QLineEdit()
+    pw.setEchoMode(QLineEdit.Password)
+    button_next = QPushButton("Connect")
+    button_next.clicked.connect(hide_pass_line)
     layout.addWidget(title_label)
+    debug_info = QLabel("DEBUG: PASSWORD IS 123")
+    debug_info.setStyleSheet("color: red;")
+    layout.addWidget(debug_info)
+    layout.addWidget(pw)
+    layout.addWidget(button_next)
     layout.addWidget(progressBar)
     progressBar.setMaximumHeight(20)
-
+    progressBar.hide()
     splash.show()
     start = time.time()
+    while not correct_pass:
+        app.processEvents()
+    progressBar.show()
     thread = GenericThread()
     thread.start()
     while thread.isRunning():
