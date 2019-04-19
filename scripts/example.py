@@ -37,7 +37,7 @@ if __name__ == "__main__":
     bank_two = Bank("Bank of Ogrimmar", [account_four], [credit_card_three, credit_card_four],
                     [investment_two, investment_three, investment_four], [bill_three, bill_four, bill_five],
                     transactions_account_two)
-    path = os.path.abspath("..")
+    path = os.path.abspath(".")
     os.makedirs(path + "/data", exist_ok=True)
     pickle.dump(bank_one, open(path + "/data/save.p", "wb"))
     pickle.dump(bank_two, open(path + "/data/save2.p", "wb"))

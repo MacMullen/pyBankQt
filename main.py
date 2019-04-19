@@ -810,36 +810,36 @@ class MainWindow(QMainWindow):
         return frame
 
     def bills_box(self, bill: Bill):
-        account_box4 = QHBoxLayout()
+        bill_box_layout = QHBoxLayout()
 
-        account_name_label4 = QLabel(bill.name)
-        account_name_label4.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
-        account_name_label4_layout = QHBoxLayout()
-        account_name_label4_layout.addWidget(account_name_label4)
+        bill_box_name = QLabel(bill.name)
+        bill_box_name.setStyleSheet("font-family: Roboto; font: 10pt; background: #282828; color: white;")
+        bill_box_name_layout = QHBoxLayout()
+        bill_box_name_layout.addWidget(bill_box_name)
 
-        account_number_label4 = QLabel("Date: " + bill.due_date.print_date())
-        account_number_label4.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
-        account_number_label4_layout = QHBoxLayout()
-        account_number_label4_layout.addWidget(account_number_label4)
+        bill_box_due_date = QLabel("Date: " + bill.due_date.print_date())
+        bill_box_due_date.setStyleSheet("font-family: Roboto; font: 8pt; background: #282828; color: grey;")
+        bill_box_due_date_layout = QHBoxLayout()
+        bill_box_due_date_layout.addWidget(bill_box_due_date)
 
-        account_balance_label4 = QLabel(str(bill.amount))
-        account_balance_label4.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
-        account_balance_label4.setMaximumWidth(75)
-        account_balance_label4.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        account_balance_money_sign = QLabel("$")
-        account_balance_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
-        account_balance_money_sign.setMaximumWidth(10)
-        account_balance_label4_layout = QHBoxLayout()
-        account_balance_label4_layout.addWidget(account_balance_money_sign)
-        account_balance_label4_layout.addWidget(account_balance_label4)
+        bill_box_balance_label = QLabel(str(bill.amount))
+        bill_box_balance_label.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: #E53935;")
+        bill_box_balance_label.setMaximumWidth(75)
+        bill_box_balance_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        bill_box_money_sign = QLabel("$")
+        bill_box_money_sign.setStyleSheet("font-family: Roboto; font: 12pt; background: #282828; color: white;")
+        bill_box_money_sign.setMaximumWidth(10)
+        bill_box_balance_label_layout = QHBoxLayout()
+        bill_box_balance_label_layout.addWidget(bill_box_money_sign)
+        bill_box_balance_label_layout.addWidget(bill_box_balance_label)
 
-        account_box4.addLayout(account_name_label4_layout)
-        account_box4.addLayout(account_number_label4_layout)
-        account_box4.addLayout(account_balance_label4_layout)
+        bill_box_layout.addLayout(bill_box_name_layout)
+        bill_box_layout.addLayout(bill_box_due_date_layout)
+        bill_box_layout.addLayout(bill_box_balance_label_layout)
 
         frame = QWidget()
         frame.setObjectName("Frame")
-        frame.setLayout(account_box4)
+        frame.setLayout(bill_box_layout)
         frame.setStyleSheet("""
             QWidget#Frame {
                border-bottom: 1px solid #33333D;
@@ -956,7 +956,7 @@ class GenericThread(QThread):
 
     def run(self):
         for index, script in enumerate(os.listdir("scripts"), 1):
-            os.system("python scripts/{}".format(script))
+            os.system("python3 scripts/{}".format(script))
             progressBar.setValue((index / len(os.listdir("data/")) * 10))
             time.sleep(2)  # Time to simulate actual progress.
         init_data()
@@ -974,7 +974,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     movie = QMovie("assests/source.gif")
     pixmap = QPixmap("assests/loading_screen_bg.png")
-    splash = QSplashScreen(pixmap)
+    splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
+    splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
     progressBar = QProgressBar()
     progressBar.setMaximumWidth(620)
     progressBar.setStyleSheet(open("assests/style.css").read())
@@ -987,7 +988,6 @@ if __name__ == "__main__":
     title_label.setAlignment(Qt.AlignCenter)
     title_pixmap = QPixmap("assests/appicon.png")
     title_label.setPixmap(QPixmap("assests/app_logo.png"))
-
     pw = QLineEdit()
     pw.setEchoMode(QLineEdit.Password)
     button_next = QPushButton("Connect")
@@ -1005,6 +1005,7 @@ if __name__ == "__main__":
     start = time.time()
     while not correct_pass:
         app.processEvents()
+        time.sleep(.1)
     progressBar.show()
     thread = GenericThread()
     thread.start()

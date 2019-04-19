@@ -1,2 +1,6 @@
 .idea/
 .DS_Store
+.directory
+data/save.p
+data/save2.p
+lib/__pycache__/classes.cpython-37.pyc
